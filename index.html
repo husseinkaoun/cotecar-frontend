@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CôteCar Frontend</title>
+    <style>
+      body { font-family: Arial; padding: 24px; }
+      button { padding: 10px 16px; border-radius: 8px; border: 1px solid #ccc; }
+      pre { margin-top: 16px; background: #111; color: #0f0; padding: 12px; overflow:auto; }
+    </style>
+  </head>
+  <body>
+    <h1>CôteCar Frontend ✅</h1>
+    <p>Testing backend:</p>
+    <button id="btn">Test /health</button>
+    <pre id="out">Click the button…</pre>
+
+    <script>
+      const API = "https://cotecar-backend-production.up.railway.app";
+      document.getElementById("btn").onclick = async () => {
+        try {
+          const r = await fetch(API + "/health");
+          const j = await r.json();
+          document.getElementById("out").textContent = JSON.stringify(j, null, 2);
+        } catch (e) {
+          document.getElementById("out").textContent = "ERROR: " + e.message;
+        }
+      };
+    </script>
+  </body>
+</html>
