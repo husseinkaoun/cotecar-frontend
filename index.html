@@ -3,73 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <title>CôteCar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #0f172a;
-      color: white;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
       padding: 20px;
     }
-    .card {
-      background: #1e293b;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
+
+    .app {
+      max-width: 420px;
+      width: 100%;
+      background: #020617;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+
     button {
-      padding: 6px 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
+      font-weight: bold;
     }
-    .delete {
-      background: #dc2626;
+
+    .btn-green {
+      background: #22c55e;
+      color: #052e16;
+    }
+
+    .btn-red {
+      background: #ef4444;
       color: white;
-      margin-top: 5px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .status {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #022c22;
+      color: #22c55e;
+    }
+
+    .error {
+      background: #3f1d1d;
+      color: #fca5a5;
+    }
+
+    .car {
+      background: #020617;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .car-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .car-actions {
+      margin-top: 8px;
+      text-align: right;
     }
   </style>
 </head>
-
 <body>
+
+<div class="app">
   <h1>🚗 CôteCar</h1>
-  <button onclick="loadCars()">Load Cars</button>
+  <div class="subtitle">Buy & Sell Cars Easily</div>
 
+  <div class="row">
+    <button class="btn-green" onclick="loadCars()">Load Cars</button>
+  </div>
+
+  <div id="status"></div>
+
+  <h3>Cars</h3>
   <div id="cars"></div>
+</div>
 
-  <script>
-    const API = "https://cotecar-backend-production.up.railway.app";
+<script>
+  const BACKEND_URL = "https://cotecar-backend-production.up.railway.app";
 
-    async function loadCars() {
-      const res = await fetch(API + "/cars");
+  function setStatus(msg, isError = false) {
+    const el = document.getElementById("status");
+    el.className = isError ? "status error" : "status";
+    el.innerText = msg;
+  }
+
+  async function loadCars() {
+    try {
+      const res = await fetch(`${BACKEND_URL}/cars`);
+      if (!res.ok) throw new Error("Cars endpoint missing");
       const cars = await res.json();
 
-      const container = document.getElementById("cars");
-      container.innerHTML = "";
+      renderCars(cars);
+      setStatus(`Loaded ${cars.length} car(s).`);
+    } catch (err) {
+      setStatus("Failed to load cars.", true);
+    }
+  }
 
-      cars.forEach(car => {
-        const div = document.createElement("div");
-        div.className = "card";
+  function renderCars(cars) {
+    const container = document.getElementById("cars");
+    container.innerHTML = "";
 
-        div.innerHTML = `
-          <strong>${car.title}</strong><br/>
-          Price: €${car.price}<br/>
-          ID: ${car.id}<br/>
-          <button class="delete" onclick="deleteCar(${car.id})">Delete</button>
-        `;
-
-        container.appendChild(div);
-      });
+    if (cars.length === 0) {
+      container.innerHTML = "<p>No cars available.</p>";
+      return;
     }
 
-    async function deleteCar(id) {
-      if (!confirm("Delete this car?")) return;
+    cars.forEach(car => {
+      const div = document.createElement("div");
+      div.className = "car";
 
-      await fetch(API + "/cars/" + id, {
-        method: "DELETE",
+      div.innerHTML = `
+        <div class="car-title">${car.title}</div>
+        <div>Price: €${car.price}</div>
+        <div>ID: ${car.id}</div>
+        <div class="car-actions">
+          <button class="btn-red" onclick="deleteCar(${car.id})">
+            Delete
+          </button>
+        </div>
+      `;
+
+      container.appendChild(div);
+    });
+  }
+
+  async function deleteCar(id) {
+    if (!confirm("Delete this car?")) return;
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/cars/${id}`, {
+        method: "DELETE"
       });
 
+      if (!res.ok) throw new Error("Delete failed");
+
+      setStatus(`Car ${id} deleted.`);
       loadCars();
+    } catch (err) {
+      setStatus("Failed to delete car.", true);
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
