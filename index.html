@@ -1,100 +1,193 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CôteCar</title>
+
   <style>
-    body{font-family:Arial,sans-serif;background:#0f172a;color:#e5e7eb;padding:20px}
-    .card{max-width:720px;margin:0 auto;background:#020617;border:1px solid #1e293b;border-radius:16px;padding:18px}
-    button{padding:10px 14px;border:0;border-radius:10px;font-weight:700;cursor:pointer}
-    .green{background:#22c55e;color:#052e16}
-    .red{background:#ef4444;color:#fff}
-    .car{background:#0b1228;border:1px solid #1e293b;border-radius:14px;padding:14px;margin-top:12px}
-    img{width:92px;height:70px;object-fit:cover;border-radius:10px;border:1px solid #1e293b}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    input{background:#0b1228;color:#e5e7eb;border:1px solid #1e293b;border-radius:10px;padding:10px}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(1200px 800px at top, #0b1220, #020617);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(720px, 100%);
+      background: rgba(10,18,40,0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      opacity: 0.8;
+      margin-bottom: 20px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .btn-green {
+      background: #22c55e;
+      color: #022c22;
+    }
+
+    .btn-red {
+      background: #ef4444;
+      color: white;
+    }
+
+    .status {
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.4);
+      padding: 10px;
+      border-radius: 10px;
+      margin: 14px 0;
+      color: #86efac;
+    }
+
+    .car {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    .car-title {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .car-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    input[type="file"] {
+      font-size: 12px;
+    }
+
+    img {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
+
   <div class="card">
     <h1>🚗 CôteCar</h1>
-    <p>Buy & Sell Cars Easily</p>
+    <div class="subtitle">Buy & Sell Cars Easily</div>
 
-    <div class="row">
-      <button class="green" onclick="loadCars()">Load Cars</button>
-      <button class="green" onclick="addCarDemo()">Add Demo Car</button>
-    </div>
+    <button class="btn-green" onclick="loadCars()">Load Cars</button>
+    <button class="btn-green" onclick="addDemoCar()">Add Demo Car</button>
+
+    <div id="status" class="status">Ready</div>
 
     <div id="cars"></div>
   </div>
 
 <script>
-  const BACKEND = "https://cotecar-backend-production.up.railway.app";
+/* 🔗 BACKEND URL — THIS IS CORRECT */
+const BACKEND = "https://cotecar-backend-production.up.railway.app";
 
-  async function loadCars() {
-    const res = await fetch(`${BACKEND}/cars`);
-    const cars = await res.json();
+async function loadCars() {
+  const res = await fetch(`${BACKEND}/cars`);
+  const cars = await res.json();
 
-    const el = document.getElementById("cars");
-    el.innerHTML = `<p>Loaded ${cars.length} car(s).</p>`;
+  document.getElementById("status").innerText =
+    `Loaded ${cars.length} car(s).`;
 
-    cars.forEach(car => {
-      const div = document.createElement("div");
-      div.className = "car";
+  const container = document.getElementById("cars");
+  container.innerHTML = "";
 
-      const inputId = `img_${car.id}`;
+  cars.forEach(car => {
+    const div = document.createElement("div");
+    div.className = "car";
 
-      div.innerHTML = `
-        <strong>${car.title}</strong><br/>
-        €${car.price} — ID: ${car.id}<br/><br/>
+    div.innerHTML = `
+      <div class="car-title">${car.title}</div>
+      <div>€${car.price} — ID: ${car.id}</div>
 
-        <div class="row">
-          <input id="${inputId}" type="file" accept="image/*" />
-          <button class="green" onclick="uploadImage(${car.id}, '${inputId}')">Upload Image</button>
-          <button class="red" onclick="deleteCar(${car.id})">Delete</button>
-        </div>
+      <div class="car-actions">
+        <input type="file" id="file-${car.id}" />
+        <button class="btn-green" onclick="uploadImage(${car.id})">
+          Upload Image
+        </button>
+        <button class="btn-red" onclick="deleteCar(${car.id})">
+          Delete
+        </button>
+      </div>
 
-        <div class="row" style="margin-top:10px;">
-          ${(car.images || []).map(img => `<img src="${img.url}" />`).join("")}
-        </div>
-      `;
+      ${car.imageUrl ? `<img src="${car.imageUrl}" />` : ""}
+    `;
 
-      el.appendChild(div);
-    });
+    container.appendChild(div);
+  });
+}
+
+async function addDemoCar() {
+  await fetch(`${BACKEND}/cars`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: "Demo Car " + Math.floor(Math.random() * 1000),
+      price: 9999
+    })
+  });
+  loadCars();
+}
+
+async function deleteCar(id) {
+  await fetch(`${BACKEND}/cars/${id}`, { method: "DELETE" });
+  loadCars();
+}
+
+async function uploadImage(id) {
+  const input = document.getElementById(`file-${id}`);
+  if (!input.files.length) {
+    alert("Pick an image first");
+    return;
   }
 
-  async function uploadImage(carId, inputId) {
-    const input = document.getElementById(inputId);
-    if (!input.files || input.files.length === 0) return alert("Pick an image first");
+  const formData = new FormData();
+  formData.append("image", input.files[0]);
 
-    const form = new FormData();
-    form.append("file", input.files[0]);
+  const res = await fetch(`${BACKEND}/cars/${id}/image`, {
+    method: "POST",
+    body: formData
+  });
 
-    const res = await fetch(`${BACKEND}/cars/${carId}/images`, {
-      method: "POST",
-      body: form
-    });
-
-    if (!res.ok) return alert("Upload failed");
-    await loadCars();
-  }
-
-  async function deleteCar(id) {
-    await fetch(`${BACKEND}/cars/${id}`, { method: "DELETE" });
-    await loadCars();
-  }
-
-  async function addCarDemo() {
-    await fetch(`${BACKEND}/cars`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: "Demo Car " + Date.now(), price: 9999 })
-    });
-    await loadCars();
+  if (!res.ok) {
+    alert("Upload failed");
+    return;
   }
 
   loadCars();
+}
 </script>
+
 </body>
 </html>
