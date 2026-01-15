@@ -3,194 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <title>CôteCar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(180deg, #0f172a, #020617);
-      color: #e5e7eb;
-      margin: 0;
-      padding: 24px;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
     }
-
     .card {
-      max-width: 520px;
-      margin: 0 auto;
-      background: #020617;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 0 40px rgba(0,0,0,.4);
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-
-    .subtitle {
-      opacity: 0.7;
-      margin-bottom: 16px;
-    }
-
-    .row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    button {
-      border: none;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .btn {
-      background: #374151;
-      color: white;
-    }
-
-    .btn-green {
-      background: #22c55e;
-      color: black;
-      font-weight: 600;
-    }
-
-    .btn-danger {
-      background: #ef4444;
-      color: white;
-    }
-
-    .status {
-      margin: 12px 0;
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
-
-    .ok {
-      background: #064e3b;
-      color: #a7f3d0;
-    }
-
-    .error {
-      background: #3f1d1d;
-      color: #fecaca;
-    }
-
-    .car {
-      background: #020617;
-      border: 1px solid #1f2933;
-      padding: 12px;
-      border-radius: 12px;
+      background: #1e293b;
+      padding: 15px;
       margin-bottom: 10px;
+      border-radius: 8px;
     }
-
-    .car-title {
-      font-weight: 600;
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-
-    .car-price {
-      opacity: 0.8;
-      font-size: 14px;
+    .delete {
+      background: #dc2626;
+      color: white;
+      margin-top: 5px;
     }
   </style>
 </head>
+
 <body>
+  <h1>🚗 CôteCar</h1>
+  <button onclick="loadCars()">Load Cars</button>
 
-  <div class="card">
-    <h1>🚗 CôteCar</h1>
-    <div class="subtitle">Buy & Sell Cars Easily</div>
+  <div id="cars"></div>
 
-    <div class="row">
-      <button class="btn" onclick="checkBackend()">Check Backend</button>
-      <button class="btn-green" onclick="loadCars()">Load Cars</button>
-    </div>
+  <script>
+    const API = "https://cotecar-backend-production.up.railway.app";
 
-    <div id="backendStatus" class="status"></div>
-
-    <div id="cars"></div>
-  </div>
-
-<script>
-  const BACKEND_URL = "https://cotecar-backend-production.up.railway.app";
-
-  async function checkBackend() {
-    const el = document.getElementById("backendStatus");
-    el.textContent = "Checking backend...";
-    el.className = "status";
-
-    try {
-      const res = await fetch(`${BACKEND_URL}/health`);
-      const data = await res.json();
-      el.textContent = "✅ Backend OK";
-      el.classList.add("ok");
-    } catch {
-      el.textContent = "❌ Backend not reachable";
-      el.classList.add("error");
-    }
-  }
-
-  async function loadCars() {
-    const container = document.getElementById("cars");
-    container.innerHTML = "";
-
-    try {
-      const res = await fetch(`${BACKEND_URL}/cars`);
-      if (!res.ok) throw new Error("No /cars endpoint");
-
+    async function loadCars() {
+      const res = await fetch(API + "/cars");
       const cars = await res.json();
 
-      if (!cars.length) {
-        container.innerHTML = "<div class='status'>No cars available.</div>";
-        return;
-      }
+      const container = document.getElementById("cars");
+      container.innerHTML = "";
 
       cars.forEach(car => {
         const div = document.createElement("div");
-        div.className = "car";
+        div.className = "card";
+
         div.innerHTML = `
-          <div class="car-title">${car.title}</div>
-          <div class="car-price">Price: ${car.price}</div>
-          <div class="car-price">ID: ${car.id}</div>
-          <br/>
-          <button class="btn-danger" onclick="deleteCar(${car.id})">
-            Delete
-          </button>
+          <strong>${car.title}</strong><br/>
+          Price: €${car.price}<br/>
+          ID: ${car.id}<br/>
+          <button class="delete" onclick="deleteCar(${car.id})">Delete</button>
         `;
+
         container.appendChild(div);
       });
-    } catch {
-      container.innerHTML = `
-        <div class="status error">
-          ⚠️ Your backend does not have /cars yet (404)
-        </div>
-      `;
     }
-  }
 
-  async function deleteCar(id) {
-    if (!confirm("Delete this car?")) return;
+    async function deleteCar(id) {
+      if (!confirm("Delete this car?")) return;
 
-    try {
-      const res = await fetch(`${BACKEND_URL}/cars/${id}`, {
-        method: "DELETE"
+      await fetch(API + "/cars/" + id, {
+        method: "DELETE",
       });
 
-      if (!res.ok) {
-        alert("Delete failed");
-        return;
-      }
-
-      await loadCars();
-    } catch {
-      alert("Network error while deleting");
+      loadCars();
     }
-  }
-</script>
-
+  </script>
 </body>
 </html>
