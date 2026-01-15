@@ -5,68 +5,220 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CôteCar</title>
   <style>
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#0b1020;color:#e8eefc}
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .card{width:min(560px,100%);background:#111a33;border:1px solid #1e2a55;border-radius:18px;padding:26px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    h1{margin:0 0 8px;font-size:28px}
-    p{margin:0 0 16px;opacity:.85}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    button,a.btn{border:0;border-radius:12px;padding:12px 14px;font-size:16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
-    .primary{background:#22c55e;color:#06210f}
-    .ghost{background:transparent;border:1px solid #2a3a75;color:#e8eefc}
-    .out{margin-top:16px;padding:12px;border-radius:12px;background:#0c1430;border:1px solid #233163;white-space:pre-wrap}
-    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-    .small{font-size:13px;opacity:.8}
+    body { font-family: -apple-system, system-ui, Arial; background:#0b1220; color:#e8eefc; margin:0; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 24px; }
+    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); border-radius: 16px; padding: 16px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .btn { border:0; border-radius: 12px; padding: 12px 14px; cursor:pointer; font-weight:600; }
+    .btn-primary { background:#22c55e; color:#06110a; }
+    .btn-ghost { background: rgba(255,255,255,0.08); color:#e8eefc; border:1px solid rgba(255,255,255,0.12); }
+    .muted { color: rgba(232,238,252,0.70); }
+    .pill { display:inline-block; padding: 4px 10px; border-radius: 999px; background: rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.35); color:#a7f3d0; font-size: 12px; }
+    .error { color:#fecaca; background: rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.35); padding:10px; border-radius: 12px; }
+    .ok { color:#bbf7d0; background: rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.35); padding:10px; border-radius: 12px; }
+    ul { list-style:none; padding:0; margin: 12px 0 0; }
+    li { padding: 12px; border-radius: 12px; border:1px solid rgba(255,255,255,0.10); background: rgba(0,0,0,0.10); margin-bottom: 10px; }
+    .title { font-size: 22px; font-weight: 800; letter-spacing: .2px; }
+    .small { font-size: 12px; }
+    a { color:#93c5fd; }
+    code { color:#c7d2fe; }
+    .spacer { height: 14px; }
+    input { width: 100%; padding: 12px; border-radius: 12px; border:1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color:#e8eefc; }
+    label { font-size: 12px; color: rgba(232,238,252,0.7); }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>🚗 CôteCar</h1>
-      <p>Buy & Sell Cars Easily</p>
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <div class="title">🚗 CôteCar</div>
+          <div class="muted">Buy & Sell Cars Easily</div>
+        </div>
+        <span class="pill" id="statusPill">Loading…</span>
+      </div>
+
+      <div class="spacer"></div>
 
       <div class="row">
-        <button class="primary" id="checkBtn">Check Backend</button>
-        <a class="btn ghost" id="openHealth" href="#" target="_blank" rel="noreferrer">Open /health</a>
+        <button class="btn btn-ghost" id="btnHealth">Check Backend</button>
+        <button class="btn btn-primary" id="btnLoadCars">Load Cars</button>
       </div>
 
-      <div class="out" id="output">Ready.</div>
-      <div class="small" style="margin-top:10px;">
-        Backend: <code id="api"></code>
+      <div class="spacer"></div>
+
+      <div class="small muted">
+        Backend: <code id="backendUrl"></code>
       </div>
+
+      <div class="spacer"></div>
+
+      <div id="message"></div>
+
+      <div class="spacer"></div>
+
+      <h3 style="margin:0;">Cars</h3>
+      <div class="muted small">This will call <code>/cars</code>. If your backend doesn’t have it yet, you’ll see a clear message.</div>
+
+      <ul id="carsList"></ul>
+
+      <div class="spacer"></div>
+
+      <h3 style="margin:0;">(Optional) Quick Add Car (frontend only)</h3>
+      <div class="muted small">This adds to the page list only (no database yet). We’ll connect it to backend later.</div>
+
+      <div class="spacer"></div>
+
+      <div class="row">
+        <div style="flex:1; min-width: 220px;">
+          <label>Title</label>
+          <input id="carTitle" placeholder="Toyota Corolla 2018" />
+        </div>
+        <div style="flex:1; min-width: 220px;">
+          <label>Price</label>
+          <input id="carPrice" placeholder="4500" />
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <button class="btn btn-ghost" id="btnAddLocal">Add to list (local)</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="muted small">
+      If you see a CORS error later, we’ll fix it in backend with <code>enableCors()</code>.
     </div>
   </div>
 
   <script>
-    // ✅ Your backend URL (no trailing slash)
-    const API_BASE = "https://cotecar-backend-production.up.railway.app";
+    // ✅ CHANGE NOTHING here unless your backend URL changes
+    const BACKEND_BASE = "https://cotecar-backend-production.up.railway.app";
 
-    const output = document.getElementById("output");
-    const api = document.getElementById("api");
-    const openHealth = document.getElementById("openHealth");
-    api.textContent = API_BASE;
-    openHealth.href = API_BASE + "/health";
+    const statusPill = document.getElementById("statusPill");
+    const backendUrlEl = document.getElementById("backendUrl");
+    const messageEl = document.getElementById("message");
+    const carsListEl = document.getElementById("carsList");
 
-    async function checkBackend() {
-      output.textContent = "Checking backend...";
-      try {
-        const res = await fetch(API_BASE + "/health", { cache: "no-store" });
-        const text = await res.text();
-        output.textContent =
-          "Status: " + res.status + "\n" +
-          "Response:\n" + text;
-      } catch (err) {
-        output.textContent =
-          "❌ Failed to reach backend.\n\n" +
-          "Possible causes:\n" +
-          "- Backend is sleeping/restarting\n" +
-          "- Wrong URL\n" +
-          "- Network/VPN issue\n\n" +
-          "Error: " + (err?.message || err);
+    backendUrlEl.textContent = BACKEND_BASE;
+
+    function setPill(text, ok = true) {
+      statusPill.textContent = text;
+      statusPill.style.background = ok ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)";
+      statusPill.style.border = ok ? "1px solid rgba(34,197,94,0.35)" : "1px solid rgba(239,68,68,0.35)";
+      statusPill.style.color = ok ? "#a7f3d0" : "#fecaca";
+    }
+
+    function showMsg(html, type = "ok") {
+      messageEl.innerHTML = `<div class="${type}">${html}</div>`;
+    }
+
+    function clearCars() {
+      carsListEl.innerHTML = "";
+    }
+
+    function renderCars(cars) {
+      clearCars();
+      if (!Array.isArray(cars) || cars.length === 0) {
+        carsListEl.innerHTML = `<li class="muted">No cars yet.</li>`;
+        return;
+      }
+      for (const c of cars) {
+        const title = c.title ?? c.name ?? "Untitled car";
+        const price = c.price ?? c.amount ?? "";
+        const id = c.id ?? "";
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div style="font-weight:800;">${escapeHtml(title)}</div>
+          <div class="muted small">Price: ${escapeHtml(String(price || "N/A"))}</div>
+          ${id ? `<div class="muted small">ID: ${escapeHtml(String(id))}</div>` : ""}
+        `;
+        carsListEl.appendChild(li);
       }
     }
 
-    document.getElementById("checkBtn").addEventListener("click", checkBackend);
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    async function checkHealth() {
+      try {
+        setPill("Checking…", true);
+        const r = await fetch(`${BACKEND_BASE}/health`, { method: "GET" });
+        const text = await r.text();
+        if (!r.ok) throw new Error(`Health not OK (${r.status})`);
+        setPill("Backend OK", true);
+        showMsg(`✅ Backend responded: <code>${escapeHtml(text)}</code>`, "ok");
+      } catch (e) {
+        setPill("Backend ERROR", false);
+        showMsg(`❌ Backend health failed. Error: <b>${escapeHtml(e.message)}</b>`, "error");
+      }
+    }
+
+    async function loadCars() {
+      try {
+        showMsg("Loading cars…", "ok");
+        clearCars();
+
+        const r = await fetch(`${BACKEND_BASE}/cars`, { method: "GET" });
+
+        // If /cars doesn't exist yet, Railway will likely return 404
+        if (r.status === 404) {
+          showMsg(
+            `⚠️ Your backend does not have <code>/cars</code> yet (404).<br/>
+             Tell me and I will give you the exact backend code to add it in NestJS.`,
+            "error"
+          );
+          carsListEl.innerHTML = `<li class="muted">No cars loaded (endpoint missing).</li>`;
+          return;
+        }
+
+        if (!r.ok) throw new Error(`Failed: ${r.status}`);
+
+        const data = await r.json();
+
+        // Accept formats: [cars] OR {cars:[...]}
+        const cars = Array.isArray(data) ? data : (data.cars ?? []);
+        renderCars(cars);
+        showMsg(`✅ Loaded ${cars.length} car(s).`, "ok");
+      } catch (e) {
+        showMsg(`❌ Could not load cars. Error: <b>${escapeHtml(e.message)}</b>`, "error");
+        carsListEl.innerHTML = `<li class="muted">Load failed. Check logs.</li>`;
+      }
+    }
+
+    // Local add (no backend yet)
+    const localCars = [];
+    function addLocalCar() {
+      const title = document.getElementById("carTitle").value.trim();
+      const price = document.getElementById("carPrice").value.trim();
+
+      if (!title) {
+        showMsg("⚠️ Please enter a title.", "error");
+        return;
+      }
+
+      localCars.unshift({ title, price });
+      renderCars(localCars);
+      showMsg("✅ Added locally (frontend only). Next we will connect this to backend POST /cars.", "ok");
+
+      document.getElementById("carTitle").value = "";
+      document.getElementById("carPrice").value = "";
+    }
+
+    document.getElementById("btnHealth").addEventListener("click", checkHealth);
+    document.getElementById("btnLoadCars").addEventListener("click", loadCars);
+    document.getElementById("btnAddLocal").addEventListener("click", addLocalCar);
+
+    // Auto-check on load
+    checkHealth();
   </script>
 </body>
 </html>
