@@ -1,10 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CôteCar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #0f172a;
+      color: #e5e7eb;
+      font-family: system-ui, sans-serif;
+      padding: 20px;
+    }
+    .card {
+      max-width: 600px;
+      margin: auto;
+      background: #020617;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .car {
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    button {
+      margin-top: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .upload {
+      background: #22c55e;
+      color: #022c22;
+    }
+    .delete {
+      background: #ef4444;
+      color: white;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>🚗 CôteCar</h1>
+    <p>Buy & Sell Cars Easily</p>
+
+    <button onclick="loadCars()">Load Cars</button>
+    <p id="status"></p>
+
+    <div id="cars"></div>
+  </div>
+
 <script>
 const BACKEND = "https://cotecar-backend-production.up.railway.app";
+
+async function loadCars() {
+  const res = await fetch(`${BACKEND}/cars`);
+  const cars = await res.json();
+
+  document.getElementById("status").innerText =
+    `Loaded ${cars.length} car(s).`;
+
+  const carsDiv = document.getElementById("cars");
+  carsDiv.innerHTML = "";
+
+  cars.forEach(car => {
+    carsDiv.innerHTML += `
+      <div class="car">
+        <strong>${car.title}</strong><br/>
+        €${car.price} — ID: ${car.id}<br/><br/>
+
+        <input type="file" id="file-${car.id}" />
+        <button class="upload"
+          onclick="uploadImage(${car.id}, 'file-${car.id}')">
+          Upload Image
+        </button>
+
+        <button class="delete"
+          onclick="deleteCar(${car.id})">
+          Delete
+        </button>
+      </div>
+    `;
+  });
+}
 
 async function uploadImage(carId, inputId) {
   const input = document.getElementById(inputId);
 
-  if (!input.files || !input.files[0]) {
+  if (!input.files.length) {
     alert("Pick an image first");
     return;
   }
@@ -15,7 +102,7 @@ async function uploadImage(carId, inputId) {
   try {
     const res = await fetch(`${BACKEND}/cars/${carId}/image`, {
       method: "POST",
-      body: formData,
+      body: formData
     });
 
     if (!res.ok) {
@@ -24,14 +111,18 @@ async function uploadImage(carId, inputId) {
       throw new Error("Upload failed");
     }
 
-    const data = await res.json();
     alert("Upload successful");
     loadCars();
-  } catch (e) {
+  } catch (err) {
     alert("Upload failed");
-    console.error(e);
+    console.error(err);
   }
 }
+
+async function deleteCar(id) {
+  await fetch(`${BACKEND}/cars/${id}`, { method: "DELETE" });
+  loadCars();
+}
 </script>
-<input type="file" id="file-1" />
-<button onclick="uploadImage(1, 'file-1')">Upload Image</button>
+</body>
+</html>
