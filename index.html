@@ -1,19 +1,72 @@
-<button id="checkBackendBtn">Check Backend</button>
-<p id="result"></p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CôteCar</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#0b1020;color:#e8eefc}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:min(560px,100%);background:#111a33;border:1px solid #1e2a55;border-radius:18px;padding:26px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h1{margin:0 0 8px;font-size:28px}
+    p{margin:0 0 16px;opacity:.85}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    button,a.btn{border:0;border-radius:12px;padding:12px 14px;font-size:16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+    .primary{background:#22c55e;color:#06210f}
+    .ghost{background:transparent;border:1px solid #2a3a75;color:#e8eefc}
+    .out{margin-top:16px;padding:12px;border-radius:12px;background:#0c1430;border:1px solid #233163;white-space:pre-wrap}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .small{font-size:13px;opacity:.8}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>🚗 CôteCar</h1>
+      <p>Buy & Sell Cars Easily</p>
 
-<script>
-  const API_BASE = "https://cotecar-backend-production.up.railway.app";
+      <div class="row">
+        <button class="primary" id="checkBtn">Check Backend</button>
+        <a class="btn ghost" id="openHealth" href="#" target="_blank" rel="noreferrer">Open /health</a>
+      </div>
 
-  document.getElementById("checkBackendBtn").addEventListener("click", async () => {
-    const result = document.getElementById("result");
-    result.textContent = "Checking backend...";
+      <div class="out" id="output">Ready.</div>
+      <div class="small" style="margin-top:10px;">
+        Backend: <code id="api"></code>
+      </div>
+    </div>
+  </div>
 
-    try {
-      const res = await fetch(`${API_BASE}/health`);
-      const data = await res.json();
-      result.textContent = "✅ Backend OK: " + JSON.stringify(data);
-    } catch (e) {
-      result.textContent = "❌ Backend not reachable: " + e.message;
+  <script>
+    // ✅ Your backend URL (no trailing slash)
+    const API_BASE = "https://cotecar-backend-production.up.railway.app";
+
+    const output = document.getElementById("output");
+    const api = document.getElementById("api");
+    const openHealth = document.getElementById("openHealth");
+    api.textContent = API_BASE;
+    openHealth.href = API_BASE + "/health";
+
+    async function checkBackend() {
+      output.textContent = "Checking backend...";
+      try {
+        const res = await fetch(API_BASE + "/health", { cache: "no-store" });
+        const text = await res.text();
+        output.textContent =
+          "Status: " + res.status + "\n" +
+          "Response:\n" + text;
+      } catch (err) {
+        output.textContent =
+          "❌ Failed to reach backend.\n\n" +
+          "Possible causes:\n" +
+          "- Backend is sleeping/restarting\n" +
+          "- Wrong URL\n" +
+          "- Network/VPN issue\n\n" +
+          "Error: " + (err?.message || err);
+      }
     }
-  });
-</script>
+
+    document.getElementById("checkBtn").addEventListener("click", checkBackend);
+  </script>
+</body>
+</html>
