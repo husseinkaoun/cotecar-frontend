@@ -2,268 +2,147 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CôteCar</title>
+
   <style>
-    body{
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1000px 700px at 20% 10%, #1a2a5a 0%, #061022 55%, #020713 100%);
-      color:#e9f0ff;
-      padding:24px;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI";
+      background: radial-gradient(1000px 700px at 50% -200px, #1b2a4e, #020617);
+      color: #e5e7eb;
+      padding: 24px;
     }
-    .card{
-      width:min(520px, 100%);
+
+    .card {
+      width: min(520px, 100%);
       background: rgba(10, 18, 40, 0.78);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 16px 50px rgba(0,0,0,.55);
-      border-radius: 20px;
-      padding: 22px;
-      backdrop-filter: blur(10px);
-    }
-    h1{ margin:0 0 6px 0; font-size: 34px; }
-    .sub{ opacity:.85; margin:0 0 14px 0; }
-    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-    button{
-      border:0;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-weight: 700;
-      cursor:pointer;
-    }
-    .btn-green{ background:#20c065; color:#04130b; }
-    .btn-red{ background:#ef4444; color:white; }
-    .btn-gray{ background: rgba(255,255,255,0.12); color:#e9f0ff; border: 1px solid rgba(255,255,255,0.08); }
-    .pill{
-      margin-left:auto;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.10);
-      font-weight:700;
-      font-size: 13px;
-    }
-    .pill.ok{ background: rgba(34,197,94,.18); border-color: rgba(34,197,94,.25); }
-    .pill.bad{ background: rgba(239,68,68,.16); border-color: rgba(239,68,68,.25); }
-    .msg{
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.10);
-      font-weight: 600;
-    }
-    .msg.ok{ background: rgba(34,197,94,.15); border-color: rgba(34,197,94,.25); }
-    .msg.err{ background: rgba(239,68,68,.14); border-color: rgba(239,68,68,.25); }
-    .small{ margin-top:10px; opacity:.8; font-size: 13px; }
-    .cars{ margin-top:16px; }
-    .car{
-      position:relative;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.16);
-      padding: 16px 16px 16px 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 28px;
+    }
+
+    .sub {
+      color: #9ca3af;
+      margin-bottom: 20px;
+    }
+
+    button {
+      border: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-green {
+      background: #22c55e;
+      color: #052e16;
+    }
+
+    .btn-red {
+      background: #ef4444;
+      color: white;
+    }
+
+    .status {
       margin-top: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(34, 197, 94, 0.25);
+      color: #22c55e;
     }
-    .car h3{ margin:0 0 6px 0; font-size: 22px; }
-    .car .meta{ opacity:.9; }
-    .car .del{
-      position:absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
+
+    .cars {
+      margin-top: 20px;
     }
-    .form{
-      margin-top: 18px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255,255,255,0.10);
-    }
-    input{
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px 12px;
+
+    .car {
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      color:#e9f0ff;
-      outline:none;
-      font-size: 15px;
+      padding: 14px;
+      margin-bottom: 12px;
     }
-    label{ display:block; margin: 12px 0 8px; opacity:.9; font-weight: 700; }
+
+    .price {
+      color: #93c5fd;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
   </style>
 </head>
+
 <body>
   <div class="card">
-    <div class="row">
-      <div>
-        <h1>🚗 CôteCar</h1>
-        <p class="sub">Buy & Sell Cars Easily</p>
-      </div>
-      <div id="statusPill" class="pill bad">Backend: Unknown</div>
-    </div>
+    <h1>🚗 CôteCar</h1>
+    <div class="sub">Buy & Sell Cars Easily</div>
 
-    <div class="row" style="margin-top:10px;">
-      <button class="btn-gray" onclick="checkBackend()">Check Backend</button>
-      <button class="btn-green" onclick="loadCars()">Load Cars</button>
-    </div>
+    <button class="btn-green" onclick="loadCars()">Load Cars</button>
 
-    <div class="small">
-      Backend: <span id="backendUrl"></span>
-    </div>
+    <div id="status" class="status" style="display:none;"></div>
 
-    <div id="message" class="msg" style="display:none;"></div>
-
-    <div class="cars">
-      <h2 style="margin:16px 0 6px 0;">Cars</h2>
-      <div id="carsList"></div>
-    </div>
-
-    <div class="form">
-      <h2 style="margin:0 0 6px 0;">Add a car</h2>
-      <label>Title</label>
-      <input id="titleInput" placeholder="Toyota Corolla 2018" />
-      <label>Price</label>
-      <input id="priceInput" type="number" placeholder="4500" />
-      <div class="row" style="margin-top:12px;">
-        <button class="btn-green" onclick="addCar()">Add Car</button>
-      </div>
-    </div>
-
-    <div class="small">
-      If you see a CORS error later, we fix it in backend with <b>enableCors()</b> (already done).
-    </div>
+    <div class="cars" id="cars"></div>
   </div>
 
-<script>
-  const BACKEND = "https://cotecar-backend-production.up.railway.app"; // ✅ your backend
-  document.getElementById("backendUrl").textContent = BACKEND;
+  <script>
+    // 🔗 BACKEND URL (Railway)
+    const BACKEND = "https://cotecar-backend-production.up.railway.app";
 
-  const statusPill = document.getElementById("statusPill");
-  const messageBox = document.getElementById("message");
-  const carsList = document.getElementById("carsList");
+    const statusEl = document.getElementById("status");
+    const carsEl = document.getElementById("cars");
 
-  function showMsg(text, type="ok") {
-    messageBox.style.display = "block";
-    messageBox.textContent = text;
-    messageBox.className = "msg " + (type === "err" ? "err" : "ok");
-  }
-
-  function setBackendStatus(ok) {
-    if (ok) {
-      statusPill.textContent = "Backend OK";
-      statusPill.className = "pill ok";
-    } else {
-      statusPill.textContent = "Backend DOWN";
-      statusPill.className = "pill bad";
+    function showStatus(text) {
+      statusEl.style.display = "block";
+      statusEl.textContent = text;
     }
-  }
 
-  async function checkBackend() {
-    try {
-      const res = await fetch(BACKEND + "/health", { method: "GET" });
-      const data = await res.json();
-      if (data && data.status === "ok") {
-        setBackendStatus(true);
-        showMsg('✅ Backend responded: ' + JSON.stringify(data), "ok");
-      } else {
-        setBackendStatus(false);
-        showMsg("⚠️ Backend responded but not OK.", "err");
-      }
-    } catch (e) {
-      setBackendStatus(false);
-      showMsg("❌ Backend is not reachable.", "err");
-    }
-  }
-
-  function renderCars(cars) {
-    carsList.innerHTML = "";
-    if (!cars || cars.length === 0) {
-      carsList.innerHTML = '<div class="msg err">No cars found.</div>';
-      return;
-    }
-    for (const car of cars) {
-      const el = document.createElement("div");
-      el.className = "car";
-      el.innerHTML = `
-        <h3>${escapeHtml(car.title)}</h3>
-        <div class="meta">Price: €${car.price}</div>
-        <div class="meta">ID: ${car.id}</div>
-        <button class="btn-red del" onclick="deleteCar(${car.id})">Delete</button>
-      `;
-      carsList.appendChild(el);
-    }
-  }
-
-  async function loadCars() {
-    try {
-      const res = await fetch(BACKEND + "/cars");
-      if (!res.ok) throw new Error("HTTP " + res.status);
+    async function loadCars() {
+      const res = await fetch(`${BACKEND}/cars`);
       const cars = await res.json();
-      renderCars(cars);
-      showMsg(`✅ Loaded ${cars.length} car(s).`, "ok");
-      setBackendStatus(true);
-    } catch (e) {
-      showMsg("❌ Failed to load cars: " + e.message, "err");
-      setBackendStatus(false);
-    }
-  }
 
-  async function addCar() {
-    const title = document.getElementById("titleInput").value.trim();
-    const price = Number(document.getElementById("priceInput").value);
+      carsEl.innerHTML = "";
+      showStatus(`Loaded ${cars.length} car(s).`);
 
-    if (!title || !price) {
-      showMsg("⚠️ Please enter title and price.", "err");
-      return;
-    }
+      cars.forEach(car => {
+        const div = document.createElement("div");
+        div.className = "car";
 
-    try {
-      const res = await fetch(BACKEND + "/cars", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, price }),
+        div.innerHTML = `
+          <div class="row">
+            <div>
+              <strong>${car.title}</strong><br />
+              <span class="price">€${car.price}</span><br />
+              ID: ${car.id}
+            </div>
+            <button class="btn-red" onclick="deleteCar(${car.id})">Delete</button>
+          </div>
+        `;
+
+        carsEl.appendChild(div);
       });
-
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      showMsg("✅ Car added.", "ok");
-      document.getElementById("titleInput").value = "";
-      document.getElementById("priceInput").value = "";
-      await loadCars();
-    } catch (e) {
-      showMsg("❌ Failed to add car: " + e.message, "err");
     }
-  }
 
-  async function deleteCar(id) {
-    const ok = confirm("Delete this car?");
-    if (!ok) return;
-
-    try {
-      const res = await fetch(BACKEND + "/cars/" + id, { method: "DELETE" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      showMsg("✅ Car deleted.", "ok");
-      await loadCars();
-    } catch (e) {
-      showMsg("❌ Failed to delete car: " + e.message, "err");
+    async function deleteCar(id) {
+      await fetch(`${BACKEND}/cars/${id}`, { method: "DELETE" });
+      loadCars();
     }
-  }
-
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, s => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    }[s]));
-  }
-
-  // auto check once
-  checkBackend();
-</script>
+  </script>
 </body>
 </html>
