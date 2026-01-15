@@ -1,76 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CôteCar</title>
+<button id="checkBackendBtn">Check Backend</button>
+<p id="result"></p>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+<script>
+  const API_BASE = "https://cotecar-backend-production.up.railway.app";
+
+  document.getElementById("checkBackendBtn").addEventListener("click", async () => {
+    const result = document.getElementById("result");
+    result.textContent = "Checking backend...";
+
+    try {
+      const res = await fetch(`${API_BASE}/health`);
+      const data = await res.json();
+      result.textContent = "✅ Backend OK: " + JSON.stringify(data);
+    } catch (e) {
+      result.textContent = "❌ Backend not reachable: " + e.message;
     }
-
-    .card {
-      background: #020617;
-      padding: 30px;
-      border-radius: 12px;
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    p {
-      opacity: 0.8;
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #22c55e;
-      color: black;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #16a34a;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>🚗 CôteCar</h1>
-    <p>Buy & Sell Cars Easily</p>
-    <button onclick="checkBackend()">Check Backend</button>
-    <p id="status"></p>
-  </div>
-
-  <script>
-    async function checkBackend() {
-      const status = document.getElementById("status");
-      status.textContent = "Checking backend...";
-
-      try {
-        const res = await fetch("https://cotecar-backend-production.up.railway.app/health");
-        const data = await res.json();
-        status.textContent = "✅ Backend connected";
-      } catch (e) {
-        status.textContent = "❌ Backend not reachable";
-      }
-    }
-  </script>
-</body>
-</html>
+  });
+</script>
