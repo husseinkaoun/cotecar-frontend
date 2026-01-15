@@ -1,246 +1,69 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
   <title>CôteCar</title>
-  <style>
-    body{
-      margin:0; min-height:100vh; display:flex; justify-content:center; align-items:flex-start;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1000px 700px at 20% 20%, #0b1b3a 0%, #050915 60%, #03040a 100%);
-      color:#e9f0ff; padding:24px;
-    }
-    .card{
-      width:min(620px, 100%);
-      background: rgba(10,18,40,.78);
-      border:1px solid rgba(255,255,255,.08);
-      box-shadow: 0 20px 60px rgba(0,0,0,.55);
-      border-radius: 18px;
-      padding: 18px;
-    }
-    h1{ margin:0 0 6px; font-size:34px; letter-spacing:.2px;}
-    .sub{ opacity:.85; margin:0 0 14px; }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; margin: 12px 0 14px; }
-    button{
-      border:0; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700;
-      background:#1f7a44; color:white;
-    }
-    button.secondary{ background:#2a324a; }
-    button.danger{ background:#e04747; }
-    .status{
-      margin: 10px 0 16px;
-      background: rgba(0, 180, 90, .18);
-      border: 1px solid rgba(0, 180, 90, .35);
-      padding: 10px 12px;
-      border-radius: 12px;
-      min-height: 20px;
-    }
-    .cars{ margin-top: 12px; }
-    .car{
-      border:1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
-      padding: 14px;
-      margin: 12px 0;
-      background: rgba(0,0,0,.15);
-      display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    }
-    .car h3{ margin:0 0 6px; font-size:22px; }
-    .muted{ opacity:.8; }
-    .right{ display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
-    .uploadRow{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-    input[type="file"]{ color:#cfe0ff; }
-    img.preview{
-      width: 140px; height: 90px; object-fit: cover; border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      display:block;
-    }
-    .pill{ font-size:12px; padding:6px 10px; border-radius:999px; background: rgba(46,255,135,.15); border:1px solid rgba(46,255,135,.30); }
-  </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🚗 CôteCar</h1>
-    <p class="sub">Buy & Sell Cars Easily</p>
 
-    <div class="row">
-      <button class="secondary" onclick="checkBackend()">Check Backend</button>
-      <button onclick="loadCars()">Load Cars</button>
-      <button class="secondary" onclick="addDemoCar()">Add Demo Car</button>
-      <span id="backendPill" class="pill" style="display:none;">Backend OK</span>
-    </div>
+<h1>🚗 CôteCar</h1>
+<button onclick="loadCars()">Load Cars</button>
 
-    <div id="status" class="status">Ready.</div>
+<div id="cars"></div>
 
-    <div class="cars">
-      <h2 style="margin: 6px 0 10px;">Cars</h2>
-      <div id="cars"></div>
-    </div>
-  </div>
+<script>
+const BACKEND = "https://cotecar-backend-production.up.railway.app";
 
-  <script>
-    // ✅ Put your backend URL here:
-    const BACKEND = "https://cotecar-backend-production.up.railway.app";
+async function loadCars() {
+  const cars = [
+    { id: 1, title: "Toyota Corolla 2018" },
+    { id: 2, title: "BMW X5 2020" },
+    { id: 3, title: "Mercedes C200 2019" },
+  ];
 
-    const statusEl = document.getElementById("status");
-    const carsEl = document.getElementById("cars");
-    const backendPill = document.getElementById("backendPill");
+  const container = document.getElementById("cars");
+  container.innerHTML = "";
 
-    function setStatus(msg, ok=true){
-      statusEl.textContent = msg;
-      statusEl.style.background = ok ? "rgba(0,180,90,.18)" : "rgba(255,70,70,.14)";
-      statusEl.style.borderColor = ok ? "rgba(0,180,90,.35)" : "rgba(255,70,70,.28)";
+  cars.forEach(car => {
+    container.innerHTML += `
+      <div>
+        <h3>${car.title}</h3>
+        <input type="file" id="file-${car.id}" />
+        <button onclick="uploadImage(${car.id})">Upload Image</button>
+      </div>
+    `;
+  });
+}
+
+async function uploadImage(carId) {
+  const input = document.getElementById(`file-${carId}`);
+  if (!input.files.length) {
+    alert("Pick an image first");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", input.files[0]);
+
+  try {
+    const res = await fetch(`${BACKEND}/cars/${carId}/image`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(text);
+      throw new Error("Upload failed");
     }
 
-    async function checkBackend(){
-      try{
-        const r = await fetch(`${BACKEND}/`);
-        const data = await r.json();
-        if(!r.ok) throw new Error("Backend not ok");
-        backendPill.style.display = "inline-block";
-        setStatus(`Backend responded: ${JSON.stringify(data)}`, true);
-      }catch(e){
-        backendPill.style.display = "none";
-        setStatus("Backend check failed.", false);
-      }
-    }
+    alert("Upload successful");
+  } catch (e) {
+    alert("Upload failed");
+    console.error(e);
+  }
+}
+</script>
 
-    function euros(n){
-      const x = Number(n || 0);
-      return x.toLocaleString("en-IE", { style:"currency", currency:"EUR" });
-    }
-
-    async function loadCars(){
-      try{
-        const r = await fetch(`${BACKEND}/cars`);
-        if(!r.ok){
-          const text = await r.text();
-          console.error(text);
-          setStatus(`Your backend does not have /cars yet (${r.status}).`, false);
-          carsEl.innerHTML = "";
-          return;
-        }
-        const cars = await r.json();
-        setStatus(`Loaded ${cars.length} car(s).`, true);
-        renderCars(cars);
-      }catch(e){
-        console.error(e);
-        setStatus("Failed to load cars.", false);
-      }
-    }
-
-    function renderCars(cars){
-      carsEl.innerHTML = "";
-      if(!cars || cars.length === 0){
-        carsEl.innerHTML = `<div class="muted">No cars found.</div>`;
-        return;
-      }
-
-      for(const car of cars){
-        const fileId = `file-${car.id}`;
-
-        const div = document.createElement("div");
-        div.className = "car";
-        div.innerHTML = `
-          <div>
-            <h3>${escapeHtml(car.title)}</h3>
-            <div class="muted">Price: ${euros(car.price)}</div>
-            <div class="muted">ID: ${car.id}</div>
-            ${car.imageUrl ? `<div style="margin-top:10px;"><img class="preview" src="${car.imageUrl}" alt="car image"/></div>` : ""}
-          </div>
-
-          <div class="right">
-            <div class="uploadRow">
-              <input type="file" id="${fileId}" accept="image/*" />
-              <button onclick="uploadImage(${car.id}, '${fileId}')">Upload Image</button>
-            </div>
-            <button class="danger" onclick="deleteCar(${car.id})">Delete</button>
-          </div>
-        `;
-        carsEl.appendChild(div);
-      }
-    }
-
-    async function deleteCar(id){
-      if(!confirm("Delete this car?")) return;
-      try{
-        const r = await fetch(`${BACKEND}/cars/${id}`, { method:"DELETE" });
-        if(!r.ok){
-          const t = await r.text(); console.error(t);
-          setStatus("Delete failed.", false);
-          return;
-        }
-        setStatus(`Deleted car ${id}.`, true);
-        loadCars();
-      }catch(e){
-        console.error(e);
-        setStatus("Delete failed.", false);
-      }
-    }
-
-    // ✅ This MUST match backend: FileInterceptor('image')
-    async function uploadImage(carId, inputId){
-      const input = document.getElementById(inputId);
-      if(!input || !input.files || !input.files[0]){
-        alert("Pick an image first");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("image", input.files[0]); // ✅ MUST be "image"
-
-      try{
-        const res = await fetch(`${BACKEND}/cars/${carId}/image`, {
-          method: "POST",
-          body: formData
-        });
-
-        if(!res.ok){
-          const text = await res.text();
-          console.error("UPLOAD ERROR:", text);
-          alert("Upload failed");
-          setStatus("Upload failed (backend returned error).", false);
-          return;
-        }
-
-        const data = await res.json();
-        setStatus("Upload successful.", true);
-        alert("Upload successful");
-        loadCars();
-      }catch(e){
-        console.error(e);
-        alert("Upload failed");
-        setStatus("Upload failed (network error).", false);
-      }
-    }
-
-    async function addDemoCar(){
-      // optional helper (only works if backend has POST /cars)
-      try{
-        const body = { title: "Demo Car " + Math.floor(Math.random()*1000), price: 9999 };
-        const r = await fetch(`${BACKEND}/cars`, {
-          method:"POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify(body)
-        });
-        if(!r.ok){
-          const t = await r.text(); console.error(t);
-          setStatus("Add demo car failed (backend may not have POST /cars).", false);
-          return;
-        }
-        setStatus("Added demo car.", true);
-        loadCars();
-      }catch(e){
-        console.error(e);
-        setStatus("Add demo car failed.", false);
-      }
-    }
-
-    function escapeHtml(s){
-      return String(s ?? "").replace(/[&<>"']/g, (m) => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[m]));
-    }
-  </script>
 </body>
 </html>
