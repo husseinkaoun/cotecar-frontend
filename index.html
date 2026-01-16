@@ -1,69 +1,140 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>CôteCar</title>
-</head>
-<body>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<h1>🚗 CôteCar</h1>
-<button onclick="loadCars()">Load Cars</button>
-
-<div id="cars"></div>
-
-<script>
-const BACKEND = "https://cotecar-backend-production.up.railway.app";
-
-async function loadCars() {
-  const cars = [
-    { id: 1, title: "Toyota Corolla 2018" },
-    { id: 2, title: "BMW X5 2020" },
-    { id: 3, title: "Mercedes C200 2019" },
-  ];
-
-  const container = document.getElementById("cars");
-  container.innerHTML = "";
-
-  cars.forEach(car => {
-    container.innerHTML += `
-      <div>
-        <h3>${car.title}</h3>
-        <input type="file" id="file-${car.id}" />
-        <button onclick="uploadImage(${car.id})">Upload Image</button>
-      </div>
-    `;
-  });
-}
-
-async function uploadImage(carId) {
-  const input = document.getElementById(`file-${carId}`);
-  if (!input.files.length) {
-    alert("Pick an image first");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("image", input.files[0]);
-
-  try {
-    const res = await fetch(`${BACKEND}/cars/${carId}/image`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error(text);
-      throw new Error("Upload failed");
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      padding: 40px;
     }
 
-    alert("Upload successful");
-  } catch (e) {
-    alert("Upload failed");
-    console.error(e);
-  }
-}
-</script>
+    .card {
+      background: #020617;
+      padding: 24px;
+      border-radius: 12px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 0 30px rgba(0,0,0,0.4);
+    }
 
+    h1 {
+      margin-top: 0;
+    }
+
+    button {
+      margin: 6px 0;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .primary {
+      background: #16a34a;
+      color: white;
+    }
+
+    .secondary {
+      background: #334155;
+      color: white;
+    }
+
+    .error {
+      background: #7f1d1d;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+
+    ul {
+      padding-left: 18px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>🚗 CôteCar</h1>
+    <p>Buy & Sell Cars Easily</p>
+
+    <button class="secondary" onclick="checkBackend()">Check Backend</button>
+    <button class="primary" onclick="loadCars()">Load Cars</button>
+    <button class="secondary" onclick="addDemoCar()">Add Demo Car</button>
+
+    <div id="message"></div>
+
+    <h2>Cars</h2>
+    <ul id="cars"></ul>
+  </div>
+
+  <script>
+    // ✅ CORRECT BACKEND URL
+    const API_BASE = "https://cotecar-backend-production.up.railway.app";
+
+    const messageEl = document.getElementById("message");
+    const carsEl = document.getElementById("cars");
+
+    function showMessage(text, isError = false) {
+      messageEl.innerHTML = text
+        ? `<div class="${isError ? "error" : ""}">${text}</div>`
+        : "";
+    }
+
+    async function checkBackend() {
+      showMessage("");
+      try {
+        const res = await fetch(`${API_BASE}/cars`);
+        if (!res.ok) throw new Error("Backend not responding");
+        showMessage("✅ Backend is online");
+      } catch (err) {
+        showMessage("❌ Backend check failed", true);
+      }
+    }
+
+    async function loadCars() {
+      showMessage("");
+      carsEl.innerHTML = "";
+      try {
+        const res = await fetch(`${API_BASE}/cars`);
+        if (!res.ok) throw new Error("Failed");
+        const cars = await res.json();
+
+        if (cars.length === 0) {
+          carsEl.innerHTML = "<li>No cars yet</li>";
+          return;
+        }
+
+        cars.forEach(car => {
+          const li = document.createElement("li");
+          li.textContent = `${car.title} — €${car.price}`;
+          carsEl.appendChild(li);
+        });
+      } catch (err) {
+        showMessage("❌ Failed to load cars", true);
+      }
+    }
+
+    async function addDemoCar() {
+      showMessage("");
+      try {
+        const res = await fetch(`${API_BASE}/cars/demo`, {
+          method: "POST",
+        });
+        if (!res.ok) throw new Error("Failed");
+        showMessage("✅ Demo car added");
+        loadCars();
+      } catch (err) {
+        showMessage("❌ Add demo car failed", true);
+      }
+    }
+  </script>
 </body>
 </html>
