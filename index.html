@@ -6,15 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
-    button:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-}
-
-button:focus {
-  outline: 2px solid #16a34a;
-}
-
     body {
       font-family: Arial, sans-serif;
       background: #0f172a;
@@ -22,7 +13,6 @@ button:focus {
       display: flex;
       justify-content: center;
       padding: 40px;
-      
     }
 
     .card {
@@ -34,9 +24,7 @@ button:focus {
       box-shadow: 0 0 30px rgba(0,0,0,0.4);
     }
 
-    h1 {
-      margin-top: 0;
-    }
+    h1 { margin-top: 0; }
 
     button {
       margin: 6px 0;
@@ -45,16 +33,25 @@ button:focus {
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
+      transition: all 0.15s ease;
     }
 
-    .primary {
-      background: #16a34a;
-      color: white;
-    }
-
+    /* Default button look */
     .secondary {
       background: #334155;
       color: white;
+    }
+
+    /* Green only when clicked/active */
+    button.active {
+      background: #16a34a !important;
+      color: white !important;
+    }
+
+    /* Small press animation */
+    button:active {
+      transform: scale(0.96);
+      opacity: 0.95;
     }
 
     .error {
@@ -64,9 +61,14 @@ button:focus {
       margin-top: 12px;
     }
 
-    ul {
-      padding-left: 18px;
+    .success {
+      background: #064e3b;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 12px;
     }
+
+    ul { padding-left: 18px; }
   </style>
 </head>
 
@@ -75,9 +77,11 @@ button:focus {
     <h1>🚗 CôteCar</h1>
     <p>Buy & Sell Cars Easily</p>
 
-    <button class="secondary" onclick="checkBackend()">Check Backend</button>
-    <button class="primary" onclick="loadCars()">Load Cars</button>
-    <button class="secondary" onclick="addDemoCar()">Add Demo Car</button>
+    <!-- All buttons start as secondary (grey).
+         Green will appear ONLY when you click a button. -->
+    <button id="btnCheck" class="secondary" onclick="checkBackend()">Check Backend</button>
+    <button id="btnLoad" class="secondary" onclick="loadCars()">Load Cars</button>
+    <button id="btnDemo" class="secondary" onclick="addDemoCar()">Add Demo Car</button>
 
     <div id="message"></div>
 
@@ -86,63 +90,101 @@ button:focus {
   </div>
 
   <script>
-    // ✅ CORRECT BACKEND URL
+    // ✅ Your backend URL
     const API_BASE = "https://cotecar-backend-production.up.railway.app";
 
     const messageEl = document.getElementById("message");
     const carsEl = document.getElementById("cars");
 
-    function showMessage(text, isError = false) {
-      messageEl.innerHTML = text
-        ? `<div class="${isError ? "error" : ""}">${text}</div>`
-        : "";
+    function showMessage(text, type = "success") {
+      if (!text) {
+        messageEl.innerHTML = "";
+        return;
+      }
+      const cls = type === "error" ? "error" : "success";
+      messageEl.innerHTML = `<div class="${cls}">${text}</div>`;
+    }
+
+    // Make ONLY the clicked button green, then clear it after the action finishes
+    function setActiveButton(btnId) {
+      document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      const btn = document.getElementById(btnId);
+      if (btn) btn.classList.add("active");
+    }
+
+    function clearActiveButtons() {
+      document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
     }
 
     async function checkBackend() {
+      setActiveButton("btnCheck");
       showMessage("");
+
       try {
-        const res = await fetch(`${API_BASE}/cars`);
+        const res = await fetch(`${API_BASE}/cars`, { cache: "no-store" });
         if (!res.ok) throw new Error("Backend not responding");
-        showMessage("✅ Backend is online");
+
+        showMessage("✅ Backend is online", "success");
       } catch (err) {
-        showMessage("❌ Backend check failed", true);
+        showMessage("❌ Backend check failed", "error");
+      } finally {
+        // Remove green after a short moment so you can see it
+        setTimeout(clearActiveButtons, 500);
       }
     }
 
     async function loadCars() {
+      setActiveButton("btnLoad");
       showMessage("");
       carsEl.innerHTML = "";
+
       try {
-        const res = await fetch(`${API_BASE}/cars`);
-        if (!res.ok) throw new Error("Failed");
+        const res = await fetch(`${API_BASE}/cars`, { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to load cars");
+
         const cars = await res.json();
 
-        if (cars.length === 0) {
+        if (!Array.isArray(cars) || cars.length === 0) {
           carsEl.innerHTML = "<li>No cars yet</li>";
+          showMessage("✅ Loaded (0 cars)", "success");
           return;
         }
 
-        cars.forEach(car => {
+        cars.forEach((car) => {
+          const title = (car && car.title) ? String(car.title) : "Untitled car";
+          const price = Number(car && car.price ? car.price : 0);
+
           const li = document.createElement("li");
-          li.textContent = `${car.title} — €${car.price}`;
+          li.textContent = `${title} — €${price}`;
           carsEl.appendChild(li);
         });
+
+        showMessage(`✅ Loaded ${cars.length} car(s)`, "success");
       } catch (err) {
-        showMessage("❌ Failed to load cars", true);
+        showMessage("❌ Failed to load cars", "error");
+      } finally {
+        setTimeout(clearActiveButtons, 500);
       }
     }
 
     async function addDemoCar() {
+      setActiveButton("btnDemo");
       showMessage("");
+
       try {
         const res = await fetch(`${API_BASE}/cars/demo`, {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
         });
-        if (!res.ok) throw new Error("Failed");
-        showMessage("✅ Demo car added");
-        loadCars();
+
+        if (!res.ok) throw new Error("Add demo car failed");
+
+        showMessage("✅ Demo car added", "success");
+        await loadCars();
       } catch (err) {
-        showMessage("❌ Add demo car failed", true);
+        showMessage("❌ Add demo car failed", "error");
+      } finally {
+        setTimeout(clearActiveButtons, 500);
       }
     }
   </script>
