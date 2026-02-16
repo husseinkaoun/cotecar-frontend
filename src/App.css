@@ -19,7 +19,6 @@
 *{ box-sizing: border-box; }
 html, body, #root{ height:100%; width:100%; margin:0; }
 
-
 /* ===== PAGE / WRAP ===== */
 .page{
   min-height:100vh;
@@ -363,9 +362,7 @@ html, body, #root{ height:100%; width:100%; margin:0; }
   object-fit:cover;
   transition: transform 0.4s ease;
 }
-.media:hover img {
-  transform: scale(1.06);
-}
+.media:hover img { transform: scale(1.06); }
 .info{
   padding:12px;
   display:flex;
@@ -396,18 +393,15 @@ html, body, #root{ height:100%; width:100%; margin:0; }
   font-size:12px;
   border:none;
 }
-/* SOLD stays visible */
 .tagSold{
   background:#ef4444 !important;
   color:#fff !important;
   display:inline-flex !important;
 }
-/* PAUSED optional */
 .tagPaused{
   background:#f59e0b;
   color:#111;
 }
-/* hide ACTIVE label */
 .tagStatus:not(.tagSold):not(.tagPaused){
   display:none !important;
 }
@@ -519,22 +513,6 @@ html, body, #root{ height:100%; width:100%; margin:0; }
 @media (max-width:700px){
   .gridCards{ grid-template-columns: 1fr; }
 }
-.cardTile{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius: var(--r14);
-  overflow:hidden;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.06);
-  display:flex;
-  flex-direction:column;
-}
-.tileMedia{ position:relative; background:#f1f3f6; }
-.tileMedia img{
-  width:100%;
-  height:180px;
-  object-fit:cover;
-  display:block;
-}
 
 /* ===== BRAND LIST (scrollable) ===== */
 .listBox{
@@ -568,8 +546,6 @@ html, body, #root{ height:100%; width:100%; margin:0; }
   min-width:28px;
   text-align:center;
 }
-
-/* ✅ keep ONLY one scrollbar block (duplicates removed) */
 .listBox::-webkit-scrollbar{ width:8px; }
 .listBox::-webkit-scrollbar-thumb{
   background: rgba(107,114,128,0.3);
@@ -633,7 +609,7 @@ a:hover{ text-decoration:underline; }
 }
 .removeBtn:hover{ background:#fff; }
 
-/* Lightbox arrows (you use inline style, but keep these for safety) */
+/* Lightbox arrows */
 .arrowBtn{
   background: rgba(255,255,255,0.3);
   border:none;
@@ -647,10 +623,7 @@ a:hover{ text-decoration:underline; }
 }
 .arrowBtn:hover{ background: rgba(255,255,255,0.5); }
 
-/* ===========================
-   ✅ iPhone: STOP INPUT AUTO-ZOOM
-   Safari zooms when input font < 16px
-   =========================== */
+/* ✅ iPhone: STOP INPUT AUTO-ZOOM */
 input,
 select,
 textarea,
@@ -663,12 +636,9 @@ button{
   font-size:16px;
 }
 
-
-
 /* =========================
    🔥 PROMO SLIDER (FIXED)
 ========================= */
-
 .promoSlider{
   width: 100%;
   height: 120px;
@@ -676,83 +646,45 @@ button{
   overflow: hidden;
   position: relative;
 }
-
 .promoSlide{
   width: 100%;
   height: 100%;
   position: relative;
   border-radius: 18px;
   overflow: hidden;
-
-  /* ✅ USE PUBLIC IMAGE */
   background-image: url("/carbon.png");
   background-size: 420px 420px;
   background-position: center;
   background-repeat: repeat;
-
   border: 1px solid rgba(0,0,0,0.08);
 }
-
-/* ✅ overlay (optional) */
 .promoOverlay{
   position: absolute;
   inset: 0;
   background: rgba(255,255,255,0.06);
   pointer-events: none;
 }
-
 .promoInner{
   position: relative;
   height: 100%;
   display: flex;
   align-items: center;
 }
-
 .logo-marquee{ width: 100%; overflow: hidden; }
-
 .logoTrack{
   display: flex;
   align-items: center;
   gap: 60px;
   animation: scrollLogos 25s linear infinite;
 }
-
 .promoLogo{
   height: 45px;
   width: auto;
   opacity: 0.92;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
-
 .promoLogo:hover{ transform: scale(1.1); opacity: 1; }
-
 @keyframes scrollLogos{
   0%{ transform: translateX(0); }
   100%{ transform: translateX(-50%); }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
