@@ -1554,6 +1554,40 @@ const dropdownItemStyle = {
     <div className="page">
 
 
+{/* ✅ MOBILE FUTURISTIC HEADER */}
+<div className="mobileHeader">
+
+  {/* LEFT: MENU */}
+  <button
+    className="mobileIconBtn"
+    onClick={() => {
+      setVerifyOpen(false);
+      setFiltersOpen(false);
+      setMobileMenuOpen(true);
+    }}
+  >
+    ☰
+  </button>
+
+  {/* CENTER: TITLE */}
+  <div className="mobileTitleBox">
+    <div className="mobileTitleMain">
+      Welcome to CôteCar Kasuwa
+    </div>
+    <div className="mobileTitleSub">
+      your premium marketplace
+    </div>
+  </div>
+
+  {/* RIGHT: REFRESH */}
+  <button
+    className="mobileIconBtn"
+    onClick={() => window.location.reload()}
+  >
+    ⟳
+  </button>
+
+</div>
 
 
 
@@ -1568,69 +1602,41 @@ const dropdownItemStyle = {
 
 
 
+{/* ✅ MOBILE TOP BAR (iPhone) */}
+<div className="mobileHeader">
+  <div
+    className="mobileRefresh"
+    onClick={() => {
+      setPageMode("BROWSE");
+      setShowMyCars(false);
+      setFiltersOpen(false);
+      setMobileMenuOpen(false);
+      setVerifyOpen(false);
+      window.location.reload(); // refresh page
+    }}
+    role="button"
+    aria-label="Refresh"
+    title="Refresh"
+  >
+    ⟳
+  </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* ✅ MOBILE TOP BAR (iPhone) */}
-      <div className="mobileHeader">
-        <div
-          className="mobileLogo"
-          onClick={() => {
-            setPageMode("BROWSE");
-            setShowMyCars(false);
-            setFiltersOpen(false);
-            setMobileMenuOpen(false);
-            setVerifyOpen(false);
-            window.location.reload(); // Refresh page on logo click as requested
-          }}
-        >
-          <img src="/logo.png" alt="CôteCar" className="mobileLogoImg" />
-        </div>
-        <div className="mobileHeaderActions">
-          <button
-            className="iconBtn"
-            type="button"
-            onClick={() => {
-              setVerifyOpen(false);
-              setFiltersOpen(false);
-              setMobileMenuOpen(true);
-            }}
-            aria-label="Open menu"
-            title="Menu"
-          >
-            ☰
-          </button>
-        </div>
-      </div>
-
-
-
-
-
+  <div className="mobileHeaderActions">
+    <button
+      className="iconBtn"
+      type="button"
+      onClick={() => {
+        setVerifyOpen(false);
+        setFiltersOpen(false);
+        setMobileMenuOpen(true);
+      }}
+      aria-label="Open menu"
+      title="Menu"
+    >
+      ☰
+    </button>
+  </div>
+</div>
 
 
 

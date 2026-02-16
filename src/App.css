@@ -688,3 +688,106 @@ button{
   0%{ transform: translateX(0); }
   100%{ transform: translateX(-50%); }
 }
+
+
+.mobileRefresh {
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+.mobileRefresh:active {
+  transform: scale(0.95);
+}
+
+
+/* ===============================
+   🔥 iPhone Futuristic Header
+================================ */
+
+.mobileHeader{
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(20,25,30,0.85),
+    rgba(30,40,50,0.75)
+  );
+
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Glass icon buttons */
+.mobileIconBtn{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+
+  background: rgba(255,255,255,0.05);
+  color: #e5e7eb;
+  font-size: 20px;
+  cursor: pointer;
+
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 12px rgba(0,255,255,0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.25s ease;
+}
+
+.mobileIconBtn:hover{
+  background: rgba(0,255,255,0.1);
+  box-shadow: 0 0 20px rgba(0,255,255,0.35);
+}
+
+/* Center Title Capsule */
+.mobileTitleBox{
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 18px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(0,255,255,0.08),
+    rgba(255,0,255,0.06)
+  );
+
+  border: 1px solid rgba(0,255,255,0.2);
+  box-shadow: 0 0 25px rgba(0,255,255,0.15);
+}
+
+.mobileTitleMain{
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.mobileTitleSub{
+  font-size: 11px;
+  margin-top: 2px;
+  color: #cbd5e1;
+  opacity: 0.9;
+}
+
+
+
+
+
