@@ -544,13 +544,6 @@ export default function App() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   // ✅ MOBILE HAMBURGER MENU (iPhone)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-// Add the new state line HERE (after the last useState)
-const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-
-
-
-
   function closeOverlays() {
     setMobileMenuOpen(false);
     setFiltersOpen(false);
@@ -969,38 +962,14 @@ function isFavorite(carId) {
       setAuthBusy(false);
     }
   }
-
-
-function onLogout() {
-  // Clear authentication
-  logout();  // This removes the token from localStorage (from your ./auth file)
-
-  // Clear all relevant React states
-  setUser(null);
-  setShowMyCars(false);
-  setFiltersOpen(false);
-  setMobileMenuOpen(false);
-  setVerifyOpen(false);
-  setProfileDropdownOpen?.(false); // if you added the desktop dropdown
-
-  // Optional: Show a quick message (disappears after 1.5s)
-  setErr("Logged out successfully");
-
-  // MOST IMPORTANT LINE FOR iPHONE:
-  // Force full page reload → fixes the "stuck Logout button" issue
-  window.location.replace("/");
-  
-  // Optional: Clear error message after a short delay
-  setTimeout(() => setErr(""), 1500);
-}
-
-
-
-
-
-
-
-
+  function onLogout() {
+    logout();
+    setUser(null);
+    setShowMyCars(false);
+    setFiltersOpen(false);
+    setMobileMenuOpen(false);
+    setVerifyOpen(false);
+  }
   /* ─────────────────────────────────────────
      Profile save
   ────────────────────────────────────────── */
@@ -1517,36 +1486,10 @@ function onLogout() {
               </div>
             ))}
           </div>
-   </div>
-  </div>
+        </div>
+      </div>
     );
   }
-
-// Add this constant HERE (right before return)
-const dropdownItemStyle = {
-  padding: '12px 20px',
-  color: '#111827',
-  textDecoration: 'none',
-  fontSize: 15,
-  fontWeight: 500,
-  display: 'block',
-  transition: 'background 0.2s',
-  cursor: 'pointer',
-  border: 'none',
-  background: 'transparent',
-  textAlign: 'left',
-  width: '100%',
-};
-
-
-
-
-
-
-
-
-
-
   /* ─────────────────────────────────────────
      RENDER
   ────────────────────────────────────────── */
@@ -2180,322 +2123,105 @@ const dropdownItemStyle = {
           </button>
         </div>
       </div>
-
-
-
-
-
-
-
-
-{mobileMenuOpen ? (
-  <div 
-    className="mobileMenuOverlay" 
-    onClick={() => setMobileMenuOpen(false)}
-    style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0,0,0,0.65)',
-      backdropFilter: 'blur(4px)',
-      zIndex: 9000,
-      display: 'flex',
-    }}
-  >
-    <div 
-      className="mobileMenu"
-      onClick={e => e.stopPropagation()}
-      style={{
-        width: '80vw',
-        maxWidth: 320,
-        height: '100%',
-        background: 'rgba(15, 23, 42, 0.78)',           // semi-transparent dark base
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderRight: '1px solid rgba(59, 130, 246, 0.22)',
-        boxShadow: '12px 0 40px rgba(0,0,0,0.55)',
-        color: '#e0f2fe',
-        padding: '24px 16px',
-        overflowY: 'auto',
-        animation: 'slideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
-    >
-      {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 32,
-      }}>
-        <h2 style={{
-          fontSize: 24,
-          fontWeight: 800,
-          background: 'linear-gradient(90deg, #60a5fa, #a5b4fc)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          letterSpacing: '-0.5px',
-        }}>
-          CôteCar
-        </h2>
-
-        <button
-          onClick={() => setMobileMenuOpen(false)}
-          style={{
-            background: 'rgba(59, 130, 246, 0.18)',
-            border: 'none',
-            borderRadius: '50%',
-            width: 44,
-            height: 44,
-            fontSize: 26,
-            fontWeight: 700,
-            color: '#bfdbfe',
-            cursor: 'pointer',
-            display: 'grid',
-            placeItems: 'center',
-            boxShadow: '0 4px 12px rgba(59,130,246,0.25)',
-          }}
-        >
-          ×
-        </button>
-      </div>
-
-      
-
-
-{/* Menu Items – glowing outlined style */}
-<div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-  {[
-    { icon: '🔍', label: 'Search filters', action: () => { setFiltersOpen(true); setMobileMenuOpen(false); } },
-    { icon: '🚗', label: 'Browse cars', action: () => { setPageMode("BROWSE"); setShowMyCars(false); setMobileMenuOpen(false); } },
-    { icon: '➕', label: 'Sell car', action: () => { setPageMode("SELL"); setMobileMenuOpen(false); } },
-    { icon: '📄', label: 'My cars', action: () => { setShowMyCars(true); setPageMode("BROWSE"); setMobileMenuOpen(false); } },
-    { icon: '👤', label: 'Profile', action: () => { setPageMode("SELL"); setMobileMenuOpen(false); } },
-    { icon: '✅', label: 'Verification', action: () => { openVerifyDropdown(); setMobileMenuOpen(false); } },
-  ].map((item, index) => (
-    <button
-      key={index}
-      onClick={() => {
-        item.action?.();
-        if (!item.danger) setMobileMenuOpen(false);
-      }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 16,
-        padding: '16px 20px',
-        borderRadius: 16,
-        background: 'transparent',
-        border: `2px solid ${item.danger ? 'rgba(239,68,68,0.4)' : 'rgba(59,130,246,0.45)'}`,
-        color: item.danger ? '#fca5a5' : '#bfdbfe',
-        fontSize: 16,
-        fontWeight: 600,
-        cursor: 'pointer',
-        transition: 'all 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
-        boxShadow: `0 0 0 0 ${item.danger ? 'rgba(239,68,68,0.0)' : 'rgba(59,130,246,0.0)'}`,
-        textAlign: 'left',
-      }}
-      onMouseEnter={e => {
-        if (!item.danger) {
-          e.currentTarget.style.borderColor = 'rgba(59,130,246,0.9)';
-          e.currentTarget.style.boxShadow = '0 0 20px rgba(59,130,246,0.35)';
-          e.currentTarget.style.transform = 'translateX(6px)';
-        } else {
-          e.currentTarget.style.borderColor = 'rgba(239,68,68,0.9)';
-          e.currentTarget.style.boxShadow = '0 0 20px rgba(239,68,68,0.35)';
-        }
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = item.danger ? 'rgba(239,68,68,0.4)' : 'rgba(59,130,246,0.45)';
-        e.currentTarget.style.boxShadow = '0 0 0 0 transparent';
-        e.currentTarget.style.transform = 'translateX(0)';
-      }}
-      onTouchStart={e => {
-        // subtle press feedback on mobile
-        e.currentTarget.style.transform = 'scale(0.97)';
-      }}
-      onTouchEnd={e => {
-        e.currentTarget.style.transform = 'scale(1)';
-      }}
-    >
-      <span style={{
-        fontSize: 24,
-        minWidth: 28,
-        opacity: 0.9,
-        color: item.danger ? '#f87171' : '#93c5fd'
-      }}>
-        {item.icon}
-      </span>
-      <span>{item.label}</span>
-    </button>
-  ))}
-
-  {/* Conditional Logout/Login with reload fix */}
-  {user ? (
-    <button
-      onClick={() => {
-        logout();  // clear token
-        setUser(null);  // clear state
-        setMobileMenuOpen(false);  // close menu
-        setErr("Logging out...");
-
-        // Delay + reload for iOS
-        setTimeout(() => {
-          window.location.replace("/");
-        }, 600);
-      }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 16,
-        padding: '16px 20px',
-        borderRadius: 16,
-        background: 'transparent',
-        border: '2px solid rgba(239,68,68,0.4)',
-        color: '#fca5a5',
-        fontSize: 16,
-        fontWeight: 600,
-        cursor: 'pointer',
-        transition: 'all 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
-        boxShadow: '0 0 0 0 rgba(239,68,68,0.0)',
-        textAlign: 'left',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'rgba(239,68,68,0.9)';
-        e.currentTarget.style.boxShadow = '0 0 20px rgba(239,68,68,0.35)';
-        e.currentTarget.style.transform = 'translateX(6px)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)';
-        e.currentTarget.style.boxShadow = '0 0 0 0 transparent';
-        e.currentTarget.style.transform = 'translateX(0)';
-      }}
-      onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-      onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)'; }}
-    >
-      <span style={{
-        fontSize: 24,
-        minWidth: 28,
-        opacity: 0.9,
-        color: '#f87171'
-      }}>
-        🚪
-      </span>
-      <span>Logout</span>
-    </button>
-  ) : (
-    <button
-      onClick={() => {
-        setPageMode("SELL");
-        setMobileMenuOpen(false);
-      }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 16,
-        padding: '16px 20px',
-        borderRadius: 16,
-        background: 'transparent',
-        border: '2px solid rgba(59,130,246,0.45)',
-        color: '#bfdbfe',
-        fontSize: 16,
-        fontWeight: 600,
-        cursor: 'pointer',
-        transition: 'all 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
-        boxShadow: '0 0 0 0 rgba(59,130,246,0.0)',
-        textAlign: 'left',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'rgba(59,130,246,0.9)';
-        e.currentTarget.style.boxShadow = '0 0 20px rgba(59,130,246,0.35)';
-        e.currentTarget.style.transform = 'translateX(6px)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'rgba(59,130,246,0.45)';
-        e.currentTarget.style.boxShadow = '0 0 0 0 transparent';
-        e.currentTarget.style.transform = 'translateX(0)';
-      }}
-      onTouchStart={e => { e.currentTarget.style.transform = 'scale(0.97)'; }}
-      onTouchEnd={e => { e.currentTarget.style.transform = 'scale(1)'; }}
-    >
-      <span style={{
-        fontSize: 24,
-        minWidth: 28,
-        opacity: 0.9,
-        color: '#93c5fd'
-      }}>
-        🔑
-      </span>
-      <span>Login / Register</span>
-    </button>
-  )}
-</div>
-
-/* Optional small footer / legal */
-<div style={{
-  marginTop: 'auto',
-  paddingTop: 24,
-  fontSize: 12,
-  color: 'rgba(203,213,225,0.6)',
-  textAlign: 'center',
-}}>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        CôteCar © {new Date().getFullYear()}
-      </div>
-    </div>
-  </div>
-) : null}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      {/* ✅ MOBILE SLIDE MENU */}
+      {mobileMenuOpen ? (
+        <div className="mobileMenuOverlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobileMenu" onClick={(e) => e.stopPropagation()}>
+            <div className="mobileMenuTop">
+              <div style={{ fontWeight: 1000 }}>Menu</div>
+              <button className="iconBtn" type="button" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" title="Close">
+                ×
+              </button>
+            </div>
+            {/* Search filters */}
+            <div
+              className="menuItem"
+              onClick={() => {
+                setPageMode("BROWSE");
+                setShowMyCars(false);
+                setMobileMenuOpen(false);
+                setFiltersOpen(true);
+              }}
+            >
+              🔍 Search filters
+            </div>
+            <div
+              className="menuItem"
+              onClick={() => {
+                setPageMode("BROWSE");
+                setShowMyCars(false);
+                setMobileMenuOpen(false);
+              }}
+            >
+              🚗 Browse cars
+            </div>
+            <div
+              className="menuItem"
+              onClick={() => {
+                setPageMode("SELL");
+                setMobileMenuOpen(false);
+              }}
+            >
+              ➕ Sell car
+            </div>
+            {user ? (
+              <div
+                className="menuItem"
+                onClick={() => {
+                  setPageMode("BROWSE");
+                  setShowMyCars(true);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                📄 My cars
+              </div>
+            ) : null}
+            {user ? (
+              <div
+                className="menuItem"
+                onClick={() => {
+                  setPageMode("SELL");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                👤 Profile
+              </div>
+            ) : null}
+            {user ? (
+              <div
+                className="menuItem"
+                onClick={() => {
+                  openVerifyDropdown();
+                  setMobileMenuOpen(false);
+                }}
+              >
+                ✅ Verification
+              </div>
+            ) : null}
+            {user ? (
+              <div
+                className="menuItem danger"
+                onClick={() => {
+                  onLogout();
+                  setMobileMenuOpen(false);
+                }}
+              >
+                🚪 Logout
+              </div>
+            ) : (
+              <div
+                className="menuItem"
+                onClick={() => {
+                  setPageMode("SELL");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                🔑 Login / Register
+              </div>
+            )}
+          </div>
+        </div>
+      ) : null}
       {/* ✅ DESKTOP HEADER (kept) */}
       <div className="header desktopHeader">
         <div className="headerInner">
@@ -2537,199 +2263,32 @@ const dropdownItemStyle = {
               Filters
             </button>
           ) : null}
-
-
-
-
-
-
-
-
-{isLoggedIn ? (
-  <div style={{ position: 'relative' }}>
-    <button
-      className="btn btnGhost"
-      onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-      title="Account"
-      type="button"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        padding: '10px 16px',
-        borderRadius: 999,
-        transition: 'all 0.2s ease',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.background = 'rgba(0,158,96,0.1)';
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,158,96,0.2)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.background = 'transparent';
-        e.currentTarget.style.boxShadow = 'none';
-      }}
-    >
-      {/* Avatar Circle */}
-      <div style={{
-        width: 36,
-        height: 36,
-        borderRadius: '50%',
-        background: profile.fullName ? '#009E60' : '#6b7280',
-        color: 'white',
-        fontWeight: 800,
-        fontSize: 15,
-        display: 'grid',
-        placeItems: 'center',
-        border: '2px solid #009E60',
-        boxShadow: '0 2px 8px rgba(0,158,96,0.25)',
-      }}>
-        {profile.fullName?.[0]?.toUpperCase() || 'U'}
-      </div>
-
-      {/* Name or "Account" */}
-      <span style={{ fontWeight: 600, color: '#111827', fontSize: 15 }}>
-        {profile.fullName?.split(' ')[0] || 'Account'}
-      </span>
-
-      {/* Chevron */}
-      <span style={{ fontSize: 12, color: '#6b7280' }}>▼</span>
-    </button>
-
-    {/* Dropdown Menu */}
-    {profileDropdownOpen && (
-      <div style={{
-        position: 'absolute',
-        top: '100%',
-        right: 0,
-        marginTop: 12,
-        background: '#ffffff',
-        borderRadius: 16,
-        boxShadow: '0 12px 32px rgba(0,0,0,0.18)',
-        border: '1px solid #e5e7eb',
-        minWidth: 240,
-        zIndex: 100,
-        overflow: 'hidden',
-        animation: 'fadeIn 0.2s ease',
-      }}>
-        {/* Header */}
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid #e5e7eb' }}>
-          <div style={{ fontWeight: 700, fontSize: 15 }}>{profile.fullName || 'User'}</div>
-          <div style={{ fontSize: 13, color: '#6b7280' }}>{user.email}</div>
-        </div>
-
-        {/* Items */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <button
-            className="btn btnGhost"
-            onClick={() => {
-              setPageMode("BROWSE");
-              setProfileDropdownOpen(false);
-            }}
-            style={dropdownItemStyle}
-          >
-            Browse
-          </button>
-          <button
-            className="btn btnGhost"
-            onClick={() => {
-              setPageMode("SELL");
-              setProfileDropdownOpen(false);
-            }}
-            style={dropdownItemStyle}
-          >
-            + Sell
-          </button>
-          <button
-            className="btn btnGhost"
-            ref={verifyBtnRef}
-            onClick={() => {
-              openVerifyDropdown();
-              setProfileDropdownOpen(false);
-            }}
-            style={dropdownItemStyle}
-          >
-            Verify
-          </button>
-          <button
-            className="btn btnGhost"
-            onClick={() => {
-              setPageMode("SELL"); // Assuming profile is in SELL mode
-              setProfileDropdownOpen(false);
-            }}
-            style={dropdownItemStyle}
-          >
-            Profile
-          </button>
-          <button
-            className="btn btnGhost"
-            onClick={() => {
-              setPageMode("BROWSE");
-              setShowMyCars(true);
-              setProfileDropdownOpen(false);
-            }}
-            style={dropdownItemStyle}
-          >
-            My Cars
-          </button>
-          <div style={{ height: 1, background: '#e5e7eb', margin: '4px 0' }} />
-          <button
-            className="btn btnGhost"
-            onClick={() => {
-              onLogout();
-              setProfileDropdownOpen(false);
-            }}
-            style={{ ...dropdownItemStyle, color: '#ef4444' }}
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-    )}
-  </div>
-) : (
-  <button
-    className="btn btnPrimary btnSell"
-    onClick={() => setPageMode("SELL")}
-    title="Sign in or Sell"
-    type="button"
-    style={{
-      padding: '12px 24px',
-      borderRadius: 999,
-      background: '#009E60',
-      color: 'white',
-      fontWeight: 700,
-      fontSize: 15,
-      border: 'none',
-      boxShadow: '0 4px 14px rgba(0,158,96,0.3)',
-      transition: 'all 0.2s ease',
-    }}
-    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
-    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-  >
-    Sign in / Sell
-  </button>
-)}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          {isLoggedIn ? (
+            <>
+              <button className="btn btnGhost" onClick={() => setPageMode("BROWSE")} title="Browse" type="button">
+                Browse
+              </button>
+              <button className="btn btnPrimary btnSell" onClick={() => setPageMode("SELL")} title="Sell" type="button">
+                + Sell
+              </button>
+              <button
+                ref={verifyBtnRef}
+                className="btn"
+                onClick={() => (verifyOpen ? setVerifyOpen(false) : openVerifyDropdown())}
+                title="Verification"
+                type="button"
+              >
+                Verify
+              </button>
+              <button className="btn" onClick={onLogout} title="Logout" type="button">
+                Logout
+              </button>
+            </>
+          ) : (
+            <button className="btn btnPrimary btnSell" onClick={() => setPageMode("SELL")} type="button">
+              Sell my car
+            </button>
+          )}
         </div>
       </div>
       {/* ✅ MOBILE FILTER DRAWER */}
@@ -2999,19 +2558,6 @@ const dropdownItemStyle = {
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
                         <select className="select" value={profile.city} onChange={(e) => setProfile((p) => ({ ...p, city: e.target.value }))}>
                           <option value="">Select City</option>
                           {cities.map((c, i) => (
@@ -3366,51 +2912,7 @@ const dropdownItemStyle = {
         borderColor: '#3b82f6',
         boxShadow: '0 2px 8px rgba(59,130,246,0.3)',
       }
-
-
-
-
-
-
-
-/* ... all your existing CSS ... */
-
-/* New additions */
-@keyframes slideIn {
-  from { transform: translateX(-100%); opacity: 0.7; }
-  to   { transform: translateX(0);     opacity: 1;   }
-}
-
-/* Make sure the overlay fades in nicely */
-.mobileMenuOverlay {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-
-
     `}</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     {["All", "New", "Used", "Public", "My Cars"].map((label) => {
       const isActive =
@@ -3576,352 +3078,103 @@ const dropdownItemStyle = {
                 {filteredCars.length === 0 ? (
                   <div className="muted">No cars match your filters. Try clearing filters.</div>
                 ) : viewMode === "GRID" ? (
-
-
-
-
-
-<div className="gridCards">
-  {filteredCars.map((c) => {
-    const myId = String(user?.id || user?.userId || "");
-    const ownerId = String(c?.ownerId || c?.owner?.id || "");
-    const isOwner = !!myId && !!ownerId && myId === ownerId;
-    const isAdminNow = String(user?.role || "").toUpperCase() === "ADMIN";
-    const canManage = isLoggedIn && (isOwner || isAdminNow);
-    const isSold = c?.status === "SOLD";
-    const isPaused = c?.status === "PAUSED";
-    const isFeat = featuredIds.has(c.id);
-    const phone = c.owner?.phone || "";
-    const whats = c.owner?.whatsapp || "";
-    return (
-      <div key={c.id} className="cardTile">
-        <div className="tileMedia">
-          {isFeat ? <div className="tagFeatured">Featured</div> : null}
-          {Array.isArray(c.images) && c.images.length > 0 ? (
-            <img src={imgUrl(c.images[0])} alt="car" style={{ cursor: "pointer" }} onClick={() => openLightbox(c, 0)} />
-          ) : (
-            <div style={{ height: '100%', display: "grid", placeItems: "center", color: "#9aa3af", fontWeight: 900 }}>No photo</div>
-          )}
-          <div className={`tagStatus ${isSold ? "tagSold" : isPaused ? "tagPaused" : ""}`}>{badgeLabel(c)}</div>
-          {Array.isArray(c.images) && c.images.length > 0 && (
-            <div style={{ display: "flex", gap: 6, padding: 10, overflowX: "auto", background: 'rgba(255,255,255,0.85)', position: 'absolute', bottom: 0, width: '100%' }}>
-              {c.images.map((im, i) => (
-                <img
-                  key={i}
-                  src={imgUrl(im)}
-                  alt={`thumb-${i}`}
-                  style={{
-                    width: 56,
-                    height: 44,
-                    objectFit: "cover",
-                    borderRadius: 10,
-                    border: "1px solid #e6e7ea",
-                    cursor: "pointer",
-                    opacity: i === 0 ? 0.6 : 1,
-                  }}
-                  onClick={() => openLightbox(c, i)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="tileInfo" style={{ padding: '16px' }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-            <div>
-              <div className="price">{formatCFA(c.price)}</div>
-              <div className="title">
-                {c.title || `${c.brand} ${c.model}`} <span style={{ color: "#6b7280", fontWeight: 900 }}>•</span> {c.year}
-              </div>
-              {c.owner?.verificationStatus === "VERIFIED" ? (
-                <div
-                  style={{
-                    marginTop: 6,
-                    display: "inline-block",
-                    background: "#e8f5e9",
-                    color: "#2e7d32",
-                    padding: "4px 10px",
-                    borderRadius: 999,
-                    fontSize: 11,
-                    fontWeight: 900,
-                  }}
-                >
-                  ✔ Verified Seller
-                </div>
-              ) : null}
-            </div>
-            <button
-              className="btnMini"
-              type="button"
-              onClick={() =>
-                setExpanded((prev) => {
-                  const next = new Set(prev);
-                  if (next.has(c.id)) next.delete(c.id);
-                  else next.add(c.id);
-                  return next;
-                })
-              }
-            >
-              {expanded.has(c.id) ? "Hide" : "Details"}
-            </button>
-          </div>
-          <div className="metaRow">
-            <span>{c.year || "—"}</span>
-            <span className="metaDot" />
-            <span>{c.mileage != null && c.mileage !== "" ? `${c.mileage} km` : "— km"}</span>
-            <span className="metaDot" />
-            <span>{c.fuel || "—"}</span>
-          </div>
-          <div className="mutedSm">
-            {c.owner?.city ? <b>{c.owner.city}</b> : "—"}
-            {c.address ? <>• {c.address}</> : null}
-          </div>
-          <div className="actionsRow">
-            <CallButton phone={phone} isSold={isSold} isOwner={isOwner} />
-            <WhatsAppButton number={whats || phone} isSold={isSold} isOwner={isOwner} />
-            <button
-              className="btnMini"
-              type="button"
-              onClick={() => toggleFavorite(c.id)}
-            >
-              {isFavorite(c.id) ? "❤️ Saved" : "🤍 Save"}
-            </button>
-          </div>
-          {expanded.has(c.id) ? (
-            <div className="expandBox">
-              {showSoldLine(c)}
-              {isSold && !isOwner ? <div className="noticeSold">✅ SOLD — please do not contact the seller about this car.</div> : null}
-              <div>
-                <div style={{ fontWeight: 1000, marginBottom: 8 }}>Highlights</div>
-                <div className="pillWrap">
-                  <InfoPill label="KM" value={c.mileage != null ? `${c.mileage} km` : ""} />
-                  <InfoPill label="Cond." value={c.condition} />
-                  <InfoPill label="Fuel" value={c.fuel} />
-                  <InfoPill label="Gear" value={c.transmission} />
-                  <InfoPill label="Type" value={c.carType} />
-                  <InfoPill label="Color" value={c.color} />
-                </div>
-              </div>
-              <div className="detailsBox">
-                <div className="detailsGrid">
-                  <div className="cell">
-                    <div className="cellLabel">Brand</div>
-                    <div className="cellValue">{labelOrDash(c.brand)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">Model</div>
-                    <div className="cellValue">{labelOrDash(c.model)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">Car Type</div>
-                    <div className="cellValue">{labelOrDash(c.carType)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">Color</div>
-                    <div className="cellValue">{labelOrDash(c.color)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">Seller Type</div>
-                    <div className="cellValue">{labelOrDash(c.owner?.sellerType)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">City</div>
-                    <div className="cellValue">{labelOrDash(c.owner?.city)}</div>
-                  </div>
-                </div>
-              </div>
-              {c.lat && c.lng && !isNaN(c.lat) && !isNaN(c.lng) ? (
-                <div style={{ display: "grid", gap: 8 }}>
-                  <iframe
-                    title={`map-${c.id}`}
-                    src={mapEmbedUrl(Number(c.lat), Number(c.lng))}
-                    width="100%"
-                    height="220"
-                    style={{ border: 0, borderRadius: 14 }}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                  />
-                  <a href={`https://www.google.com/maps?q=${c.lat},${c.lng}`} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>
-                    Open in Google Maps
-                  </a>
-                </div>
-              ) : null}
-              {isLoggedIn && canManage ? (
-                <div className="actionsRow" style={{ marginTop: 4 }}>
-                  <button className="btnMini" disabled={c.status === "SOLD"} onClick={() => setCarStatus(c.id, "SOLD")} type="button">
-                    {c.status === "SOLD" ? "Sold ✅" : "Mark Sold"}
-                  </button>
-                  <button className="btnMini" disabled={c.status === "PAUSED"} onClick={() => setCarStatus(c.id, "PAUSED")} type="button">
-                    Delist
-                  </button>
-                  <button className="btnMini" disabled={c.status === "ACTIVE"} onClick={() => setCarStatus(c.id, "ACTIVE")} type="button">
-                    Relist
-                  </button>
-                  <button className="btnMini" onClick={() => deleteCar(c.id)} type="button">
-                    Delete
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
-      </div>
-    );
-  })}
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- ) : (
-
-
-
-
-
-
-<div className="list">
-  {filteredCars.map((c) => {
-    const myId = String(user?.id || user?.userId || "");
-    const ownerId = String(c?.ownerId || c?.owner?.id || "");
-    const isOwner = !!myId && !!ownerId && myId === ownerId;
-    const isAdminNow = String(user?.role || "").toUpperCase() === "ADMIN";
-    const canManage = isLoggedIn && (isOwner || isAdminNow);
-    const isSold = c?.status === "SOLD";
-    const isPaused = c?.status === "PAUSED";
-    const isFeat = featuredIds.has(c.id);
-    const phone = c.owner?.phone || "";
-    const whats = c.owner?.whatsapp || "";
-    return (
-      <div key={c.id} className="cardRow">
-        <div className="media">
-          {isFeat ? <div className="tagFeatured">Featured</div> : null}
-          {Array.isArray(c.images) && c.images.length > 0 ? (
-            <img
-              src={imgUrl(c.images[0])}
-              alt="car"
-              style={{ cursor: "pointer" }}
-              onClick={() => openLightbox(c, 0)}
-            />
-          ) : (
-            <div
-              style={{
-                height: 220,
-                display: "grid",
-                placeItems: "center",
-                color: "#9aa3af",
-                fontWeight: 900,
-              }}
-            >
-              No photo
-            </div>
-          )}
-          {Array.isArray(c.images) && c.images.length > 1 && (
-            <div style={{ display: "flex", gap: 6, padding: 10, overflowX: "auto" }}>
-              {c.images.map((im, i) => (
-                <img
-                  key={i}
-                  src={imgUrl(im)}
-                  alt={`thumb-${i}`}
-                  style={{
-                    width: 60,
-                    height: 46,
-                    objectFit: "cover",
-                    borderRadius: 10,
-                    border: "1px solid #e6e7ea",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => openLightbox(c, i)}
-                />
-              ))}
-            </div>
-          )}
-          <div className={`tagStatus ${isSold ? "tagSold" : isPaused ? "tagPaused" : ""}`}>
-            {badgeLabel(c)}
-          </div>
-        </div>
-        <div className="info" style={{ padding: '16px' }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-            <div>
-              <div className="price">{formatCFA(c.price)}</div>
-              <div className="title">
-                {c.title || `${c.brand} ${c.model}`}{" "}
-                <span style={{ color: "#6b7280", fontWeight: 900 }}>•</span> {c.year}
-              </div>
-              {c.owner?.verificationStatus === "VERIFIED" ? (
-                <div
-                  style={{
-                    marginTop: 6,
-                    display: "inline-block",
-                    background: "#e8f5e9",
-                    color: "#2e7d32",
-                    padding: "4px 10px",
-                    borderRadius: 999,
-                    fontSize: 11,
-                    fontWeight: 900,
-                  }}
-                >
-                  ✔ Verified Seller
-                </div>
-              ) : null}
-            </div>
-            {/* ✅ ONE Details button (do not duplicate anywhere else) */}
-            <button
-              className="btnMini"
-              type="button"
-              onClick={() =>
-                setExpanded((prev) => {
-                  const next = new Set(prev);
-                  if (next.has(c.id)) next.delete(c.id);
-                  else next.add(c.id);
-                  return next;
-                })
-              }
-            >
-              {expanded.has(c.id) ? "Hide details" : "View details"}
-            </button>
-          </div>
-          <div className="metaRow">
-            <span>{c.year || "—"}</span>
-            <span className="metaDot" />
-            <span>{c.mileage != null && c.mileage !== "" ? `${c.mileage} km` : "— km"}</span>
-            <span className="metaDot" />
-            <span>{c.fuel || "—"}</span>
-            <span className="metaDot" />
-            <span>{c.transmission || "—"}</span>
-          </div>
-          <div className="mutedSm">
-            {c.owner?.city ? <b>{c.owner.city}</b> : "—"}
-            {c.address ? <>• {c.address}</> : null}
-          </div>
-          <div className="actionsRow">
-            <CallButton phone={phone} isSold={isSold} isOwner={isOwner} />
-            <WhatsAppButton number={whats || phone} isSold={isSold} isOwner={isOwner} />
-            {c.lat && c.lng && !isNaN(c.lat) && !isNaN(c.lng) ? (
-              <a
-                className="btnMini"
-                href={`https://www.google.com/maps?q=${c.lat},${c.lng}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Map
-              </a>
-            ) : null}
+                  <div className="gridCards">
+                    {filteredCars.map((c) => {
+                      const myId = String(user?.id || user?.userId || "");
+                      const ownerId = String(c?.ownerId || c?.owner?.id || "");
+                      const isOwner = !!myId && !!ownerId && myId === ownerId;
+                      const isAdminNow = String(user?.role || "").toUpperCase() === "ADMIN";
+                      const canManage = isLoggedIn && (isOwner || isAdminNow);
+                      const isSold = c?.status === "SOLD";
+                      const isPaused = c?.status === "PAUSED";
+                      const isFeat = featuredIds.has(c.id);
+                      const phone = c.owner?.phone || "";
+                      const whats = c.owner?.whatsapp || "";
+                      return (
+                        <div key={c.id} className="cardTile">
+                          <div className="tileMedia">
+                            {isFeat ? <div className="tagFeatured">Featured</div> : null}
+                            {Array.isArray(c.images) && c.images.length > 0 ? (
+                              <img src={imgUrl(c.images[0])} alt="car" style={{ cursor: "pointer" }} onClick={() => openLightbox(c, 0)} />
+                            ) : (
+                              <div style={{ height: 180, display: "grid", placeItems: "center", color: "#9aa3af", fontWeight: 900 }}>No photo</div>
+                            )}
+                            <div className={`tagStatus ${isSold ? "tagSold" : isPaused ? "tagPaused" : ""}`}>{badgeLabel(c)}</div>
+                            {Array.isArray(c.images) && c.images.length > 0 && (
+                              <div style={{ display: "flex", gap: 6, padding: 10, overflowX: "auto" }}>
+                                {c.images.map((im, i) => (
+                                  <img
+                                    key={i}
+                                    src={imgUrl(im)}
+                                    alt={`thumb-${i}`}
+                                    style={{
+                                      width: 56,
+                                      height: 44,
+                                      objectFit: "cover",
+                                      borderRadius: 10,
+                                      border: "1px solid #e6e7ea",
+                                      cursor: "pointer",
+                                      opacity: i === 0 ? 0.6 : 1,
+                                    }}
+                                    onClick={() => openLightbox(c, i)}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <div className="tileInfo">
+                            <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+                              <div>
+                                <div className="price">{formatCFA(c.price)}</div>
+                                <div className="title">
+                                  {c.title || `${c.brand} ${c.model}`} <span style={{ color: "#6b7280", fontWeight: 900 }}>•</span> {c.year}
+                                </div>
+                                {c.owner?.verificationStatus === "VERIFIED" ? (
+                                  <div
+                                    style={{
+                                      marginTop: 6,
+                                      display: "inline-block",
+                                      background: "#e8f5e9",
+                                      color: "#2e7d32",
+                                      padding: "4px 10px",
+                                      borderRadius: 999,
+                                      fontSize: 11,
+                                      fontWeight: 900,
+                                    }}
+                                  >
+                                    ✔ Verified Seller
+                                  </div>
+                                ) : null}
+                              </div>
+                              <button
+                                className="btnMini"
+                                type="button"
+                                onClick={() =>
+                                  setExpanded((prev) => {
+                                    const next = new Set(prev);
+                                    if (next.has(c.id)) next.delete(c.id);
+                                    else next.add(c.id);
+                                    return next;
+                                  })
+                                }
+                              >
+                                {expanded.has(c.id) ? "Hide" : "Details"}
+                              </button>
+                            </div>
+                            <div className="metaRow">
+                              <span>{c.year || "—"}</span>
+                              <span className="metaDot" />
+                              <span>{c.mileage != null && c.mileage !== "" ? `${c.mileage} km` : "— km"}</span>
+                              <span className="metaDot" />
+                              <span>{c.fuel || "—"}</span>
+                            </div>
+                            <div className="mutedSm">
+                              {c.owner?.city ? <b>{c.owner.city}</b> : "—"}
+                              {c.address ? <>• {c.address}</> : null}
+                            </div>
+                            <div className="actionsRow">
+                              <CallButton phone={phone} isSold={isSold} isOwner={isOwner} />
+                              <WhatsAppButton number={whats || phone} isSold={isSold} isOwner={isOwner} />
 <button
   className="btnMini"
   type="button"
@@ -3929,111 +3182,331 @@ const dropdownItemStyle = {
 >
   {isFavorite(c.id) ? "❤️ Saved" : "🤍 Save"}
 </button>
-          </div>
-          {/* ✅ EXPANDED DETAILS (FULL like GRID) */}
-          {expanded.has(c.id) ? (
-            <div className="expandBox">
-              {showSoldLine(c)}
-              {isSold && !isOwner ? (
-                <div className="noticeSold">✅ SOLD — please do not contact the seller about this car.</div>
-              ) : null}
-              {/* ✅ Highlights */}
-              <div>
-                <div style={{ fontWeight: 1000, marginBottom: 8 }}>Highlights</div>
-                <div className="pillWrap">
-                  <InfoPill label="KM" value={c.mileage != null && c.mileage !== "" ? `${c.mileage} km` : "—"} />
-                  <InfoPill label="Cond." value={c.condition || "—"} />
-                  <InfoPill label="Fuel" value={c.fuel || "—"} />
-                  <InfoPill label="Gear" value={c.transmission || "—"} />
-                  <InfoPill label="Type" value={c.carType || "—"} />
-                  <InfoPill label="Color" value={c.color || "—"} />
-                </div>
-              </div>
-              {/* ✅ Details grid */}
-              <div className="detailsBox">
-                <div className="detailsGrid">
-                  <div className="cell">
-                    <div className="cellLabel">Brand</div>
-                    <div className="cellValue">{labelOrDash(c.brand)}</div>
+                            </div>
+                            {expanded.has(c.id) ? (
+                              <div className="expandBox">
+                                {showSoldLine(c)}
+                                {isSold && !isOwner ? <div className="noticeSold">✅ SOLD — please do not contact the seller about this car.</div> : null}
+                                <div>
+                                  <div style={{ fontWeight: 1000, marginBottom: 8 }}>Highlights</div>
+                                  <div className="pillWrap">
+                                    <InfoPill label="KM" value={c.mileage != null ? `${c.mileage} km` : ""} />
+                                    <InfoPill label="Cond." value={c.condition} />
+                                    <InfoPill label="Fuel" value={c.fuel} />
+                                    <InfoPill label="Gear" value={c.transmission} />
+                                    <InfoPill label="Type" value={c.carType} />
+                                    <InfoPill label="Color" value={c.color} />
+                                  </div>
+                                </div>
+                                <div className="detailsBox">
+                                  <div className="detailsGrid">
+                                    <div className="cell">
+                                      <div className="cellLabel">Brand</div>
+                                      <div className="cellValue">{labelOrDash(c.brand)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">Model</div>
+                                      <div className="cellValue">{labelOrDash(c.model)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">Car Type</div>
+                                      <div className="cellValue">{labelOrDash(c.carType)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">Color</div>
+                                      <div className="cellValue">{labelOrDash(c.color)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">Seller Type</div>
+                                      <div className="cellValue">{labelOrDash(c.owner?.sellerType)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">City</div>
+                                      <div className="cellValue">{labelOrDash(c.owner?.city)}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                                {c.lat && c.lng && !isNaN(c.lat) && !isNaN(c.lng) ? (
+                                  <div style={{ display: "grid", gap: 8 }}>
+                                    <iframe
+                                      title={`map-${c.id}`}
+                                      src={mapEmbedUrl(Number(c.lat), Number(c.lng))}
+                                      width="100%"
+                                      height="220"
+                                      style={{ border: 0, borderRadius: 14 }}
+                                      loading="lazy"
+                                      referrerPolicy="no-referrer-when-downgrade"
+                                      allowFullScreen
+                                    />
+                                    <a href={`https://www.google.com/maps?q=${c.lat},${c.lng}`} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>
+                                      Open in Google Maps
+                                    </a>
+                                  </div>
+                                ) : null}
+                                {isLoggedIn && canManage ? (
+                                  <div className="actionsRow" style={{ marginTop: 4 }}>
+                                    <button className="btnMini" disabled={c.status === "SOLD"} onClick={() => setCarStatus(c.id, "SOLD")} type="button">
+                                      {c.status === "SOLD" ? "Sold ✅" : "Mark Sold"}
+                                    </button>
+                                    <button className="btnMini" disabled={c.status === "PAUSED"} onClick={() => setCarStatus(c.id, "PAUSED")} type="button">
+                                      Delist
+                                    </button>
+                                    <button className="btnMini" disabled={c.status === "ACTIVE"} onClick={() => setCarStatus(c.id, "ACTIVE")} type="button">
+                                      Relist
+                                    </button>
+                                    <button className="btnMini" onClick={() => deleteCar(c.id)} type="button">
+                                      Delete
+                                    </button>
+                                  </div>
+                                ) : null}
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="cell">
-                    <div className="cellLabel">Model</div>
-                    <div className="cellValue">{labelOrDash(c.model)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">Car Type</div>
-                    <div className="cellValue">{labelOrDash(c.carType)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">Color</div>
-                    <div className="cellValue">{labelOrDash(c.color)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">Seller Type</div>
-                    <div className="cellValue">{labelOrDash(c.owner?.sellerType)}</div>
-                  </div>
-                  <div className="cell">
-                    <div className="cellLabel">City</div>
-                    <div className="cellValue">{labelOrDash(c.owner?.city)}</div>
-                  </div>
-                </div>
-              </div>
-              {/* ✅ Map preview + Open link */}
-              {c.lat && c.lng && !isNaN(c.lat) && !isNaN(c.lng) ? (
-                <div style={{ display: "grid", gap: 8 }}>
-                  <iframe
-                    title={`map-${c.id}`}
-                    src={mapEmbedUrl(Number(c.lat), Number(c.lng))}
-                    width="100%"
-                    height="220"
-                    style={{ border: 0, borderRadius: 14 }}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                  />
-                  <a
-                    href={`https://www.google.com/maps?q=${c.lat},${c.lng}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ fontSize: 13 }}
-                  >
-                    Open in Google Maps
-                  </a>
-                </div>
-              ) : null}
-              {/* ✅ Admin/Owner actions */}
-              {isLoggedIn && canManage ? (
-                <div className="actionsRow" style={{ marginTop: 4 }}>
-                  <button
-                    className="btnMini"
-                    disabled={c.status === "SOLD"}
-                    onClick={() => setCarStatus(c.id, "SOLD")}
-                    type="button"
-                  >
-                    {c.status === "SOLD" ? "Sold ✅" : "Mark Sold"}
-                  </button>
-                  <button
-                    className="btnMini"
-                    disabled={c.status === "PAUSED"}
-                    onClick={() => setCarStatus(c.id, "PAUSED")}
-                    type="button"
-                  >
-                    Delist
-                  </button>
-                  <button
-                    className="btnMini"
-                    disabled={c.status === "ACTIVE"}
-                    onClick={() => setCarStatus(c.id, "ACTIVE")}
-                    type="button"
-                  >
-                    Relist
-                  </button>
-                  <button className="btnMini" onClick={() => deleteCar(c.id)} type="button">
-                    Delete </button> </div>) : null} </div>) : null} </div> </div>);
-  })} </div>)} </div> </div> </div> )}
+                ) : (
+                  <div className="list">
+                    {filteredCars.map((c) => {
+                      const myId = String(user?.id || user?.userId || "");
+                      const ownerId = String(c?.ownerId || c?.owner?.id || "");
+                      const isOwner = !!myId && !!ownerId && myId === ownerId;
+                      const isAdminNow = String(user?.role || "").toUpperCase() === "ADMIN";
+                      const canManage = isLoggedIn && (isOwner || isAdminNow);
+                      const isSold = c?.status === "SOLD";
+                      const isPaused = c?.status === "PAUSED";
+                      const isFeat = featuredIds.has(c.id);
+                      const phone = c.owner?.phone || "";
+                      const whats = c.owner?.whatsapp || "";
+                      return (
+                        <div key={c.id} className="cardRow">
+                          <div className="media">
+                            {isFeat ? <div className="tagFeatured">Featured</div> : null}
+                            {Array.isArray(c.images) && c.images.length > 0 ? (
+                              <img
+                                src={imgUrl(c.images[0])}
+                                alt="car"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => openLightbox(c, 0)}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  height: 220,
+                                  display: "grid",
+                                  placeItems: "center",
+                                  color: "#9aa3af",
+                                  fontWeight: 900,
+                                }}
+                              >
+                                No photo
+                              </div>
+                            )}
+                            {Array.isArray(c.images) && c.images.length > 1 && (
+                              <div style={{ display: "flex", gap: 6, padding: 10, overflowX: "auto" }}>
+                                {c.images.map((im, i) => (
+                                  <img
+                                    key={i}
+                                    src={imgUrl(im)}
+                                    alt={`thumb-${i}`}
+                                    style={{
+                                      width: 60,
+                                      height: 46,
+                                      objectFit: "cover",
+                                      borderRadius: 10,
+                                      border: "1px solid #e6e7ea",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() => openLightbox(c, i)}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                            <div className={`tagStatus ${isSold ? "tagSold" : isPaused ? "tagPaused" : ""}`}>
+                              {badgeLabel(c)}
+                            </div>
+                          </div>
+                          <div className="info">
+                            <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+                              <div>
+                                <div className="price">{formatCFA(c.price)}</div>
+                                <div className="title">
+                                  {c.title || `${c.brand} ${c.model}`}{" "}
+                                  <span style={{ color: "#6b7280", fontWeight: 900 }}>•</span> {c.year}
+                                </div>
+                                {c.owner?.verificationStatus === "VERIFIED" ? (
+                                  <div
+                                    style={{
+                                      marginTop: 6,
+                                      display: "inline-block",
+                                      background: "#e8f5e9",
+                                      color: "#2e7d32",
+                                      padding: "4px 10px",
+                                      borderRadius: 999,
+                                      fontSize: 11,
+                                      fontWeight: 900,
+                                    }}
+                                  >
+                                    ✔ Verified Seller
+                                  </div>
+                                ) : null}
+                              </div>
+                              {/* ✅ ONE Details button (do not duplicate anywhere else) */}
+                              <button
+                                className="btnMini"
+                                type="button"
+                                onClick={() =>
+                                  setExpanded((prev) => {
+                                    const next = new Set(prev);
+                                    if (next.has(c.id)) next.delete(c.id);
+                                    else next.add(c.id);
+                                    return next;
+                                  })
+                                }
+                              >
+                                {expanded.has(c.id) ? "Hide details" : "View details"}
+                              </button>
+                            </div>
+                            <div className="metaRow">
+                              <span>{c.year || "—"}</span>
+                              <span className="metaDot" />
+                              <span>{c.mileage != null && c.mileage !== "" ? `${c.mileage} km` : "— km"}</span>
+                              <span className="metaDot" />
+                              <span>{c.fuel || "—"}</span>
+                              <span className="metaDot" />
+                              <span>{c.transmission || "—"}</span>
+                            </div>
+                            <div className="mutedSm">
+                              {c.owner?.city ? <b>{c.owner.city}</b> : "—"}
+                              {c.address ? <>• {c.address}</> : null}
+                            </div>
+                            <div className="actionsRow">
+                              <CallButton phone={phone} isSold={isSold} isOwner={isOwner} />
+                              <WhatsAppButton number={whats || phone} isSold={isSold} isOwner={isOwner} />
+                              {c.lat && c.lng && !isNaN(c.lat) && !isNaN(c.lng) ? (
+                                <a
+                                  className="btnMini"
+                                  href={`https://www.google.com/maps?q=${c.lat},${c.lng}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  Map
+                                </a>
+                              ) : null}
+<button
+  className="btnMini"
+  type="button"
+  onClick={() => toggleFavorite(c.id)}
+>
+  {isFavorite(c.id) ? "❤️ Saved" : "🤍 Save"}
+</button>
+                            </div>
+                            {/* ✅ EXPANDED DETAILS (FULL like GRID) */}
+                            {expanded.has(c.id) ? (
+                              <div className="expandBox">
+                                {showSoldLine(c)}
+                                {isSold && !isOwner ? (
+                                  <div className="noticeSold">✅ SOLD — please do not contact the seller about this car.</div>
+                                ) : null}
+                                {/* ✅ Highlights */}
+                                <div>
+                                  <div style={{ fontWeight: 1000, marginBottom: 8 }}>Highlights</div>
+                                  <div className="pillWrap">
+                                    <InfoPill label="KM" value={c.mileage != null && c.mileage !== "" ? `${c.mileage} km` : "—"} />
+                                    <InfoPill label="Cond." value={c.condition || "—"} />
+                                    <InfoPill label="Fuel" value={c.fuel || "—"} />
+                                    <InfoPill label="Gear" value={c.transmission || "—"} />
+                                    <InfoPill label="Type" value={c.carType || "—"} />
+                                    <InfoPill label="Color" value={c.color || "—"} />
+                                  </div>
+                                </div>
+                                {/* ✅ Details grid */}
+                                <div className="detailsBox">
+                                  <div className="detailsGrid">
+                                    <div className="cell">
+                                      <div className="cellLabel">Brand</div>
+                                      <div className="cellValue">{labelOrDash(c.brand)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">Model</div>
+                                      <div className="cellValue">{labelOrDash(c.model)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">Car Type</div>
+                                      <div className="cellValue">{labelOrDash(c.carType)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">Color</div>
+                                      <div className="cellValue">{labelOrDash(c.color)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">Seller Type</div>
+                                      <div className="cellValue">{labelOrDash(c.owner?.sellerType)}</div>
+                                    </div>
+                                    <div className="cell">
+                                      <div className="cellLabel">City</div>
+                                      <div className="cellValue">{labelOrDash(c.owner?.city)}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                                {/* ✅ Map preview + Open link */}
+                                {c.lat && c.lng && !isNaN(c.lat) && !isNaN(c.lng) ? (
+                                  <div style={{ display: "grid", gap: 8 }}>
+                                    <iframe
+                                      title={`map-${c.id}`}
+                                      src={mapEmbedUrl(Number(c.lat), Number(c.lng))}
+                                      width="100%"
+                                      height="220"
+                                      style={{ border: 0, borderRadius: 14 }}
+                                      loading="lazy"
+                                      referrerPolicy="no-referrer-when-downgrade"
+                                      allowFullScreen
+                                    />
+                                    <a
+                                      href={`https://www.google.com/maps?q=${c.lat},${c.lng}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      style={{ fontSize: 13 }}
+                                    >
+                                      Open in Google Maps
+                                    </a>
+                                  </div>
+                                ) : null}
+                                {/* ✅ Admin/Owner actions */}
+                                {isLoggedIn && canManage ? (
+                                  <div className="actionsRow" style={{ marginTop: 4 }}>
+                                    <button
+                                      className="btnMini"
+                                      disabled={c.status === "SOLD"}
+                                      onClick={() => setCarStatus(c.id, "SOLD")}
+                                      type="button"
+                                    >
+                                      {c.status === "SOLD" ? "Sold ✅" : "Mark Sold"}
+                                    </button>
+                                    <button
+                                      className="btnMini"
+                                      disabled={c.status === "PAUSED"}
+                                      onClick={() => setCarStatus(c.id, "PAUSED")}
+                                      type="button"
+                                    >
+                                      Delist
+                                    </button>
+                                    <button
+                                      className="btnMini"
+                                      disabled={c.status === "ACTIVE"}
+                                      onClick={() => setCarStatus(c.id, "ACTIVE")}
+                                      type="button"
+                                    >
+                                      Relist
+                                    </button>
+                                    <button className="btnMini" onClick={() => deleteCar(c.id)} type="button">
+                                      Delete </button> </div>) : null} </div>) : null} </div> </div>);
+                    })} </div>)} </div> </div> </div> )}
 {pageMode === "FAVORITES" && (
   <div className="panel">
     <h3 style={{ marginBottom: 12 }}>⭐ My Favorite Cars</h3>
+
     {favorites.length === 0 ? (
       <div className="mutedSm">No favorites yet.</div>
     ) : (
@@ -4051,11 +3524,13 @@ const dropdownItemStyle = {
                   </div>
                 )}
               </div>
+
               <div className="info">
                 <div className="price">{formatCFA(c.price)}</div>
                 <div className="title">
                   {c.brand} {c.model} • {c.year}
                 </div>
+
                 <div style={{ marginTop: 8 }}>
                   <button
                     className="btnMini"
@@ -4071,24 +3546,6 @@ const dropdownItemStyle = {
     )}
   </div>
 )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
         {/* Lightbox */}
         {lightbox.open ? (
           <div
